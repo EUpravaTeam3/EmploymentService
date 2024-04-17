@@ -7,9 +7,9 @@ import (
 
 type Diploma struct {
 	Id              primitive.ObjectID `bson:"_id"`
-	InstitutionId   uuid.UUID          `json:"institutionId"`
-	InstitutionName string             `json:"institutionName"`
-	InstitutionType string             `json:"institutionType"`
-	AverageGrade    float64            `json:"averageGrade"`
-	OwnerUCN        string             `json:"ucn"`
+	InstitutionId   uuid.UUID          `bson:"institutionId"`
+	InstitutionName string             `bson:"institution_name"`
+	InstitutionType string             `bson:"institution_type"`
+	AverageGrade    float64            `bson:"averageGrade"`
+	OwnerUCN        string             `bson:"ucn"`
 }
