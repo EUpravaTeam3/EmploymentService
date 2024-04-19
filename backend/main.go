@@ -2,10 +2,13 @@ package main
 
 import (
 	"context"
+	"employment-service/handlers"
 	"employment-service/repositories"
 	"log"
 	"os"
 	"time"
+
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -19,7 +22,7 @@ func main() {
 	defer cancel()
 
 	logger := log.New(os.Stdout, "[product-api] ", log.LstdFlags)
-	storeLogger := log.New(os.Stdout, "[profile-store] ", log.LstdFlags)
+	storeLogger := log.New(os.Stdout, "[employment-store] ", log.LstdFlags)
 
 	store, err := repositories.New(timeoutContext, storeLogger)
 	if err != nil {
@@ -28,4 +31,9 @@ func main() {
 	defer store.Disconnect(timeoutContext)
 
 	store.Ping()
+
+	employmentHandler := handlers.NewEmploymentHandler(logger, store)
+
+	router := gin.New()
+	router.Use(employmentHandler.CORSMiddleware())
 }
