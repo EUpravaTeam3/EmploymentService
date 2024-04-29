@@ -36,4 +36,5 @@ func main() {
 
 	router := gin.New()
 	router.Use(employmentHandler.CORSMiddleware())
+	router.Use(employmentHandler.GenerateDiploma)
 }
