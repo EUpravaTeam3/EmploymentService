@@ -1,0 +1,31 @@
+version: "3.8"
+
+services:
+
+  employment_service:
+    image: employment_service
+    container_name: employment_service
+    hostname: employment_service
+    build:
+      context: ./backend/
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      EMPLOYMENT_DB_HOST: employment_db
+      EMPLOYMENT_DB_PORT: 27017
+      EMPLOYMENT_SERVICE_PORT: 8000
+    depends_on:
+      - employment_db
+    networks:
+      - network
+
+  employment_db:
+    image: mongo
+    container_name: employment_db
+    restart: on-failure
+    networks:
+      - network
+
+networks:
+  network:
+    driver: bridge

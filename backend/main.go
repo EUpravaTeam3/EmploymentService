@@ -18,7 +18,7 @@ func main() {
 		port = "8000"
 	}
 
-	timeoutContext, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	timeoutContext, cancel := context.WithTimeout(context.Background(), 100*time.Second)
 	defer cancel()
 
 	logger := log.New(os.Stdout, "[product-api] ", log.LstdFlags)
