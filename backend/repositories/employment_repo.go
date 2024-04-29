@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"context"
+	"employment-service/domain"
 	"fmt"
 	"log"
 	"time"
@@ -28,6 +29,63 @@ func New(ctx context.Context, logger *log.Logger) (*EmploymentRepo, error) {
 		cli:    client,
 		logger: logger,
 	}, nil
+}
+
+func (er *EmploymentRepo) AddDiplomaToCV(diploma *domain.Diploma) error {
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	diplomaCollection := er.getCollection("cvs")
+
+	filter := bson.M{"citizen_ucn": diploma.citizen_ucn}
+
+	var existingCv bson.M
+
+	if err := diplomaCollection.FindOne(ctx, filter).Decode(&existingCv); err != nil {
+
+		if err == mongo.ErrNoDocuments {
+
+			var newCv domain.CV
+			newCv.CitizenUCN = diploma.citizen_ucn
+			newCv.Description = ""
+			newCV.WorkExperience = []string
+			newCV.Education = []Diploma
+			newCV.Education[0] = diploma
+
+			result, err := collection.InsertOne(ctx, &newCV)
+			if err != nil {
+				fmt.Println(err)
+				ar.logger.Println(err)
+				return err
+			}
+
+			er.logger.Printf("Documents ID: %v\n", result.InsertedID)
+			return nil
+
+		} else {
+			log.Fatal(err)
+			return err
+		}
+	}
+
+	update := bson.M{"$push": bson.M{"education": diploma}}
+
+	updateResult, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		fmt.Print(err)
+		return err
+	}
+
+	er.logger.Printf("result: %v\n", updateResult)
+
+}
+
+func getCollection(collectionName string) *mongo.Collection {
+
+	database := er.cli.Database("mongoDemo")
+	collection := database.Collection(collectionName)
+	return collection
 }
 
 func DBinstance() *mongo.Client {

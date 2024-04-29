@@ -1,8 +1,11 @@
 package handlers
 
 import (
+	"employment-service/domain"
 	"employment-service/repositories"
+	"fmt"
 	"log"
+	"net/http"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -17,6 +20,26 @@ var SECRET_KEY string = os.Getenv("SECRET_KEY")
 
 func NewEmploymentHandler(l *log.Logger, r *repositories.EmploymentRepo) *EmploymentHandler {
 	return &EmploymentHandler{l, r}
+}
+
+func (e *EmploymentHandler) GenerateDiploma(c *gin.Context) {
+
+	var diploma *domain.Diploma
+
+	if err := c.ShouldBindJSON(&diploma); err != nil {
+		fmt.Print(err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := e.repo.AddDiplomaToCV(diploma); err != nil {
+		fmt.Print(err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, "")
+
 }
 
 func (p *EmploymentHandler) CORSMiddleware() gin.HandlerFunc {
