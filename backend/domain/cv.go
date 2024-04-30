@@ -5,7 +5,7 @@ import (
 )
 
 type CV struct {
-	Id             primitive.ObjectID `bson:"_id"`
+	Id             primitive.ObjectID `bson:"_id,omitempty"`
 	CitizenUCN     string             `bson:"citizen_ucn"`
 	Description    string             `bson:"description"`
 	WorkExperience []string           `bson:"work_experience"`

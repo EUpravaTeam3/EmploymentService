@@ -36,27 +36,27 @@ func (er *EmploymentRepo) AddDiplomaToCV(diploma *domain.Diploma) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	diplomaCollection := er.getCollection("cvs")
+	cvCollection := er.getCollection("cvs")
 
-	filter := bson.M{"citizen_ucn": diploma.citizen_ucn}
+	filter := bson.M{"citizen_ucn": diploma.OwnerUCN}
 
 	var existingCv bson.M
 
-	if err := diplomaCollection.FindOne(ctx, filter).Decode(&existingCv); err != nil {
+	if err := cvCollection.FindOne(ctx, filter).Decode(&existingCv); err != nil {
 
 		if err == mongo.ErrNoDocuments {
 
 			var newCv domain.CV
-			newCv.CitizenUCN = diploma.citizen_ucn
+			newCv.CitizenUCN = diploma.OwnerUCN
 			newCv.Description = ""
-			newCV.WorkExperience = []string
-			newCV.Education = []Diploma
-			newCV.Education[0] = diploma
+			newCv.WorkExperience = []string{}
+			newCv.Education = []domain.Diploma{}
+			newCv.Education = append(newCv.Education, *diploma)
 
-			result, err := collection.InsertOne(ctx, &newCV)
+			result, err := cvCollection.InsertOne(ctx, &newCv)
 			if err != nil {
 				fmt.Println(err)
-				ar.logger.Println(err)
+				er.logger.Println(err)
 				return err
 			}
 
@@ -71,7 +71,7 @@ func (er *EmploymentRepo) AddDiplomaToCV(diploma *domain.Diploma) error {
 
 	update := bson.M{"$push": bson.M{"education": diploma}}
 
-	updateResult, err := collection.UpdateOne(ctx, filter, update)
+	updateResult, err := cvCollection.UpdateOne(ctx, filter, update)
 	if err != nil {
 		fmt.Print(err)
 		return err
@@ -79,9 +79,11 @@ func (er *EmploymentRepo) AddDiplomaToCV(diploma *domain.Diploma) error {
 
 	er.logger.Printf("result: %v\n", updateResult)
 
+	return nil
+
 }
 
-func getCollection(collectionName string) *mongo.Collection {
+func (er *EmploymentRepo) getCollection(collectionName string) *mongo.Collection {
 
 	database := er.cli.Database("mongoDemo")
 	collection := database.Collection(collectionName)

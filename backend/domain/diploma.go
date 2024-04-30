@@ -6,7 +6,7 @@ import (
 )
 
 type Diploma struct {
-	Id              primitive.ObjectID `bson:"_id"`
+	Id              primitive.ObjectID `bson:"_id,omitempty"`
 	InstitutionId   uuid.UUID          `bson:"institution_id"`
 	InstitutionName string             `bson:"institution_name"`
 	InstitutionType string             `bson:"institution_type"`

@@ -3,7 +3,7 @@ package domain
 import "go.mongodb.org/mongo-driver/bson/primitive"
 
 type Employer struct {
-	Id                primitive.ObjectID `bson:"_id"`
+	Id                primitive.ObjectID `bson:"_id,omitempty"`
 	CompanyName       string             `bson:"company_name"`
 	Industry          string             `bson:"industry"`
 	Headquarters      string             `bson:"headquarters"`

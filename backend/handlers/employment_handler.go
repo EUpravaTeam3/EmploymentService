@@ -26,7 +26,7 @@ func (e *EmploymentHandler) GenerateDiploma(c *gin.Context) {
 
 	var diploma *domain.Diploma
 
-	if err := c.ShouldBindJSON(&diploma); err != nil {
+	if err := c.BindJSON(&diploma); err != nil {
 		fmt.Print(err.Error())
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -38,7 +38,7 @@ func (e *EmploymentHandler) GenerateDiploma(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, "")
+	c.JSON(http.StatusOK, diploma)
 
 }
 

@@ -26,6 +26,20 @@ services:
     networks:
       - network
 
+  api_gateway:
+    build:
+      context: ./api_gateway/
+      dockerfile: Dockerfile
+    container_name: api_gateway
+    hostname: api_gateway
+    restart: on-failure
+    ports:
+      - 8000:8000
+    depends_on:
+      - employment_service
+    networks:
+      - network
+
 networks:
   network:
     driver: bridge
