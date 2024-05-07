@@ -39,6 +39,7 @@ func main() {
 	router := gin.New()
 	router.Use(employmentHandler.CORSMiddleware())
 	router.POST("/diploma", employmentHandler.GenerateDiploma)
+	router.POST("/jobad", employmentHandler.PostJobAd)
 
 	router.Run(":" + port)
 
