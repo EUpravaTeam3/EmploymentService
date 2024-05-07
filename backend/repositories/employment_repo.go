@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -81,6 +82,48 @@ func (er *EmploymentRepo) AddDiplomaToCV(diploma *domain.Diploma) error {
 
 	return nil
 
+}
+
+func (er *EmploymentRepo) FindCompanyByJobId(jobId primitive.ObjectID) (domain.Employer, error) {
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	var job domain.Job
+	var company domain.Employer
+
+	jobCollection := er.getCollection("jobs")
+	companyCollection := er.getCollection("companies")
+
+	err := jobCollection.FindOne(ctx, bson.M{"_id": jobId}).Decode(&job)
+	if err != nil {
+		er.logger.Println(err)
+		return company, err
+	}
+
+	err := companyCollection.FindOne(ctx, bson.M{"_id": job.EmployerId}).Decode(&company)
+	if err != nil {
+		er.logger.Println(err)
+		return company, err
+	}
+
+	return company, nil
+}
+
+func (er *EmploymentRepo) InsertJobAd(jobAd *domain.JobAd) error {
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	jobAdCollection := er.getCollection("jobAds")
+
+	_, err := jobAdCollection.InsertOne(ctx, &jobAd)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (er *EmploymentRepo) getCollection(collectionName string) *mongo.Collection {
