@@ -19,65 +19,19 @@ services:
     networks:
       - network
       
-  aprcroso_service:
-    image: aprcroso_service
-    container_name: aprcroso_service
+  employment-client-app:
     build:
-      context: ./aprcroso/
+      context: ./client/
+      dockerfile: Dockerfile
     ports:
-      - "8005:8005"
+      - "8080:80"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql_db:3306/aprcrosodb?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
-    depends_on:
-      - mysql_db
-    networks:
-      - network  
+      - NGINX_PORT=80
       
-  sso_service:
-    image: sso_service
-    container_name: sso_service
-    build:
-      context: ./SSO-main/SSO/
-    ports:
-      - "9090:9090"
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql_db:3306/ssodb?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
-    depends_on:
-      - mysql_db
-    networks:
-      - network  
-      
-  school_service:
-    image: school_service
-    container_name: school_service
-    build:
-      context: ./school_service/project/backend/eschool/
-    ports:
-      - "8080:8080"
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql_db:3306/eschooldb?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
-    depends_on:
-      - mysql_db
-    networks:
-      - network
-
   employment_db:
     image: mongo
     container_name: employment_db
     restart: on-failure
-    networks:
-      - network
-      
-  mysql_db:
-    image: 'mysql:8.0'
-    container_name: mysql_db
-    environment:
-      - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_PASSWORD=root
-      - MYSQL_USERNAME=root
-    ports:
-      - '3307:3306'
-    restart: always
     networks:
       - network
 

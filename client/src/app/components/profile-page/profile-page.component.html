@@ -1,0 +1,43 @@
+<nav-bar></nav-bar>
+<!-- dodati koji je role na profilu, Gost ili Host -->
+
+<div class="container-xl px-4 mt-4">
+    <div class="row">
+        <div class="col-xl-4">
+            <!-- Profile picture card-->
+            <div class="card mb-4 mb-xl-0">
+                <div class="card-header">Profile Picture</div>
+                <div class="card-body text-center">
+                    <!-- Profile picture image-->
+                    <img id="fileInput" class="img-account-profile rounded-circle mb-2" alt="">
+                    <!-- Profile picture help block-->
+                    <div class="small font-italic text-muted mb-4">JPG or PNG no larger than 5 MB</div>
+                    <!-- Profile picture upload button-->
+                    <div class="input-group mb-3">
+                        <input type="file" class="form-control" id="fileUpload">
+                      </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-8">
+            <!-- Account details card-->
+            <div class="card mb-4">
+                <div class="card-header">Account Details
+                    <button class="btn btn-outline-danger" id="btnDeleteProfile" data-bs-toggle="modal"
+                        data-bs-target="#staticBackdrop" type="button">Delete account</button>
+                </div>
+
+                <div class="card-body">
+                    <!-- Form Group (username)-->
+                    <div class="mb-3">
+                        <label class="small mb-1" for="inputUsername">Username (how your name will appear to other
+                            users on the site)</label>
+                        <input class="form-control" id="inputUsername" type="text"
+                            placeholder="Enter your username" value="test">
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
