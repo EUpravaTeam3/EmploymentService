@@ -101,7 +101,7 @@ func (er *EmploymentRepo) FindCompanyByJobId(jobId primitive.ObjectID) (domain.E
 		return company, err
 	}
 
-	err := companyCollection.FindOne(ctx, bson.M{"_id": job.EmployerId}).Decode(&company)
+	err = companyCollection.FindOne(ctx, bson.M{"_id": job.EmployerId}).Decode(&company)
 	if err != nil {
 		er.logger.Println(err)
 		return company, err
