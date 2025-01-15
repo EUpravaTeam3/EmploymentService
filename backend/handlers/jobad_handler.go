@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -16,41 +15,39 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-type JobHandler struct {
+type JobAdHandler struct {
 	logger *log.Logger
 	repo   *repositories.EmploymentRepo
 }
 
-func NewJobHandler(l *log.Logger, r *repositories.EmploymentRepo) *JobHandler {
-	return &JobHandler{l, r}
+func NewJobAdHandler(l *log.Logger, r *repositories.EmploymentRepo) *JobAdHandler {
+	return &JobAdHandler{l, r}
 }
 
-var SECRET_KEY string = os.Getenv("SECRET_KEY")
-var dbName string = "employmentdb"
-var JobCollName string = "jobs"
+var jobAdCollName string = "jobAds"
 
-func (j *JobHandler) GetJobs(c *gin.Context) {
+func (j *JobAdHandler) GetJobAds(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	var jobs domain.Jobs
+	var jobAds domain.JobAds
 
-	var jobCollection = j.repo.GetCollection(dbName, JobCollName)
+	var JobAdCollection = j.repo.GetCollection(dbName, jobAdCollName)
 
-	jobsCursor, err := jobCollection.Find(ctx, bson.M{})
+	JobAdCursor, err := JobAdCollection.Find(ctx, bson.M{})
 	if err != nil {
 		j.logger.Println(err)
 		return
 	}
 
-	if err = jobsCursor.All(ctx, &jobs); err != nil {
+	if err = JobAdCursor.All(ctx, &jobAds); err != nil {
 		http.Error(c.Writer, err.Error(),
 			http.StatusInternalServerError)
 		j.logger.Fatal(err)
 		return
 	}
 
-	err = jobs.ToJSON(c.Writer)
+	err = jobAds.ToJSON(c.Writer)
 	if err != nil {
 		http.Error(c.Writer, err.Error(),
 			http.StatusInternalServerError)
@@ -59,19 +56,19 @@ func (j *JobHandler) GetJobs(c *gin.Context) {
 	}
 }
 
-func (j *JobHandler) PostJob(c *gin.Context) {
+func (j *JobAdHandler) PostJobAd(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	jobCollection := j.repo.GetCollection(dbName, JobCollName)
+	jobAdCollection := j.repo.GetCollection(dbName, jobAdCollName)
 
-	var job *domain.Job
+	var jobAd *domain.JobAd
 
-	if err := c.ShouldBindJSON(&job); err != nil {
+	if err := c.ShouldBindJSON(&jobAd); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	result, err := jobCollection.InsertOne(ctx, &job)
+	result, err := jobAdCollection.InsertOne(ctx, &jobAd)
 	if err != nil {
 		http.Error(c.Writer, err.Error(),
 			http.StatusInternalServerError)
@@ -84,34 +81,34 @@ func (j *JobHandler) PostJob(c *gin.Context) {
 	e.Encode(result)
 }
 
-func (j *JobHandler) GetJobById(c *gin.Context) {
-	id := c.Param("job_id")
+func (j *JobAdHandler) GetJobAdById(c *gin.Context) {
+	id := c.Param("jobad_id")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	var job domain.Job
+	var jobAd domain.JobAd
 
 	objectId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		log.Println("Invalid id")
 	}
 
-	jobCollection := j.repo.GetCollection(dbName, JobCollName)
-	err = jobCollection.FindOne(ctx, bson.M{"_id": objectId}).Decode(&job)
+	jobAdCollection := j.repo.GetCollection(dbName, jobAdCollName)
+	err = jobAdCollection.FindOne(ctx, bson.M{"_id": objectId}).Decode(&jobAd)
 	if err != nil {
 		http.Error(c.Writer, err.Error(),
 			http.StatusInternalServerError)
 		j.logger.Println(err)
 	}
-	job.ToJSON(c.Writer)
+	jobAd.ToJSON(c.Writer)
 }
 
-func (j *JobHandler) EditJob(c *gin.Context) {
-	id := c.Param("job_id")
+func (j *JobAdHandler) EditJobAd(c *gin.Context) {
+	id := c.Param("jobad_id")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	var job domain.Job
+	var jobAd domain.JobAd
 
 	objectId, err := primitive.ObjectIDFromHex(id)
 
@@ -120,45 +117,30 @@ func (j *JobHandler) EditJob(c *gin.Context) {
 		return
 	}
 
-	if err := c.BindJSON(&job); err != nil {
+	if err := c.BindJSON(&jobAd); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	jobCollection := j.repo.GetCollection(dbName, JobCollName)
+	jobAdCollection := j.repo.GetCollection(dbName, jobAdCollName)
 
-	jobCollection.UpdateOne(ctx, bson.M{"_id": objectId}, bson.M{
+	jobAdCollection.UpdateOne(ctx, bson.M{"_id": objectId}, bson.M{
 		"$set": bson.M{
-			"position_name":     job.PoistionName,
-			"pay":               job.Pay,
-			"num_of_employees":  job.NumOfEmployees,
-			"Employee_capacity": job.EmployeeCapacity,
+			"ad_title":        jobAd.AdTitle,
+			"job_description": jobAd.JobDescription,
+			"qualification":   jobAd.Qualification,
+			"job_type":        jobAd.JobType,
 		}})
 }
 
-func (j *JobHandler) DeleteJobById(c *gin.Context) {
-	id := c.Param("job_id")
+func (j *JobAdHandler) DeleteJobAdById(c *gin.Context) {
+	id := c.Param("jobad_id")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	jobCollection := j.repo.GetCollection(dbName, JobCollName)
 	jobAdCollection := j.repo.GetCollection(dbName, jobAdCollName)
 
-	objectId, err := primitive.ObjectIDFromHex(id)
-
-	var job domain.Job
-
-	err = jobCollection.FindOne(ctx, bson.M{"_id": objectId}).Decode(&job)
-
-	_, err = jobAdCollection.DeleteMany(ctx, bson.D{{Key: "job_id", Value: job.Id}})
-
-	if err != nil {
-		http.Error(c.Writer, err.Error(),
-			http.StatusInternalServerError)
-		j.logger.Println(err)
-	}
-
-	_, err = jobCollection.DeleteOne(ctx, bson.D{{Key: "_id", Value: id}})
+	_, err := jobAdCollection.DeleteOne(ctx, bson.D{{Key: "_id", Value: id}})
 
 	if err != nil {
 		http.Error(c.Writer, err.Error(),
