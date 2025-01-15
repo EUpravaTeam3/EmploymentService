@@ -36,6 +36,7 @@ func main() {
 
 	employmentHandler := handlers.NewEmploymentHandler(logger, store)
 	jobHandler := handlers.NewJobHandler(logger, store)
+	newsHandler := handlers.NewNewsHandler(logger, store)
 
 	router := gin.New()
 	router.Use(employmentHandler.CORSMiddleware())
@@ -44,6 +45,12 @@ func main() {
 	router.POST("/job", jobHandler.PostJob)
 	router.PUT("/job/{job_id}", jobHandler.EditJob)
 	router.DELETE("/job/{job_id}", jobHandler.DeleteJobById)
+
+	router.GET("/news", newsHandler.GetNews)
+	router.GET("/news/{news_id}", newsHandler.GetNewsById)
+	router.POST("/news", newsHandler.PostNews)
+	router.PUT("/news/{news_id}", newsHandler.EditNews)
+	router.DELETE("/news/{news_id}", newsHandler.DeleteNewsById)
 
 	router.Run(":" + port)
 

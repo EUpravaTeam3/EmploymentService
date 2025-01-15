@@ -27,7 +27,7 @@ func NewJobHandler(l *log.Logger, r *repositories.EmploymentRepo) *JobHandler {
 
 var SECRET_KEY string = os.Getenv("SECRET_KEY")
 var dbName string = "employmentdb"
-var collName string = "jobs"
+var JobCollName string = "jobs"
 
 func (j *JobHandler) GetJobs(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -35,7 +35,7 @@ func (j *JobHandler) GetJobs(c *gin.Context) {
 
 	var jobs domain.Jobs
 
-	var jobCollection = j.repo.GetCollection(dbName, collName)
+	var jobCollection = j.repo.GetCollection(dbName, JobCollName)
 
 	jobsCursor, err := jobCollection.Find(ctx, bson.M{})
 	if err != nil {
@@ -62,7 +62,7 @@ func (j *JobHandler) GetJobs(c *gin.Context) {
 func (j *JobHandler) PostJob(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	jobCollection := j.repo.GetCollection(dbName, collName)
+	jobCollection := j.repo.GetCollection(dbName, JobCollName)
 
 	var job *domain.Job
 
@@ -96,7 +96,7 @@ func (j *JobHandler) GetJobById(c *gin.Context) {
 		log.Println("Invalid id")
 	}
 
-	jobCollection := j.repo.GetCollection(dbName, collName)
+	jobCollection := j.repo.GetCollection(dbName, JobCollName)
 	err = jobCollection.FindOne(ctx, bson.M{"_id": objectId}).Decode(&job)
 	if err != nil {
 		http.Error(c.Writer, err.Error(),
@@ -125,7 +125,7 @@ func (j *JobHandler) EditJob(c *gin.Context) {
 		return
 	}
 
-	jobCollection := j.repo.GetCollection(dbName, collName)
+	jobCollection := j.repo.GetCollection(dbName, JobCollName)
 
 	jobCollection.UpdateOne(ctx, bson.M{"_id": objectId}, bson.M{
 		"$set": bson.M{
@@ -141,7 +141,7 @@ func (j *JobHandler) DeleteJobById(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	jobCollection := j.repo.GetCollection(dbName, collName)
+	jobCollection := j.repo.GetCollection(dbName, JobCollName)
 
 	_, err := jobCollection.DeleteOne(ctx, bson.D{{Key: "_id", Value: id}})
 
