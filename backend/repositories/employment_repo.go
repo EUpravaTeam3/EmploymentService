@@ -15,7 +15,7 @@ import (
 )
 
 type EmploymentRepo struct {
-	cli    *mongo.Client
+	Cli    *mongo.Client
 	logger *log.Logger
 }
 
@@ -27,9 +27,13 @@ func New(ctx context.Context, logger *log.Logger) (*EmploymentRepo, error) {
 	}
 
 	return &EmploymentRepo{
-		cli:    client,
+		Cli:    client,
 		logger: logger,
 	}, nil
+}
+
+func (er *EmploymentRepo) GetCollection(dbName, collectionName string) *mongo.Collection {
+	return er.Cli.Database(dbName).Collection(collectionName)
 }
 
 func (er *EmploymentRepo) AddDiplomaToCV(diploma *domain.Diploma) error {
@@ -128,7 +132,7 @@ func (er *EmploymentRepo) InsertJobAd(jobAd *domain.JobAd) error {
 
 func (er *EmploymentRepo) getCollection(collectionName string) *mongo.Collection {
 
-	database := er.cli.Database("mongoDemo")
+	database := er.Cli.Database("mongoDemo")
 	collection := database.Collection(collectionName)
 	return collection
 }
@@ -155,7 +159,7 @@ var Client *mongo.Client = DBinstance()
 
 // Disconnect from database
 func (pr *EmploymentRepo) Disconnect(ctx context.Context) error {
-	err := pr.cli.Disconnect(ctx)
+	err := pr.Cli.Disconnect(ctx)
 	if err != nil {
 		return err
 	}
@@ -168,13 +172,13 @@ func (pr *EmploymentRepo) Ping() {
 	defer cancel()
 
 	// Check connection -> if there's no error, connection is established
-	err := pr.cli.Ping(ctx, readpref.Primary())
+	err := pr.Cli.Ping(ctx, readpref.Primary())
 	if err != nil {
 		pr.logger.Println(err)
 	}
 
 	// Print available databases
-	databases, err := pr.cli.ListDatabaseNames(ctx, bson.M{})
+	databases, err := pr.Cli.ListDatabaseNames(ctx, bson.M{})
 	if err != nil {
 		pr.logger.Println(err)
 	}
