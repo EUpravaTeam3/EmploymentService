@@ -111,7 +111,6 @@ func (j *JobAdHandler) EditJobAd(c *gin.Context) {
 	var jobAd domain.JobAd
 
 	objectId, err := primitive.ObjectIDFromHex(id)
-
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -139,8 +138,27 @@ func (j *JobAdHandler) DeleteJobAdById(c *gin.Context) {
 	defer cancel()
 
 	jobAdCollection := j.repo.GetCollection(dbName, jobAdCollName)
+	applicantsCollection := j.repo.GetCollection(dbName, ApplicantCollName)
 
-	_, err := jobAdCollection.DeleteOne(ctx, bson.D{{Key: "_id", Value: id}})
+	objectId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	_, errApplicant := applicantsCollection.DeleteMany(ctx, bson.M{"job_ad_id": objectId})
+	if errApplicant != nil {
+		http.Error(c.Writer, errApplicant.Error(),
+			http.StatusInternalServerError)
+		j.logger.Println(errApplicant)
+	}
+
+	_, errJobAd := jobAdCollection.DeleteOne(ctx, bson.D{{Key: "_id", Value: id}})
+	if errJobAd != nil {
+		http.Error(c.Writer, errJobAd.Error(),
+			http.StatusInternalServerError)
+		j.logger.Println(errJobAd)
+	}
 
 	if err != nil {
 		http.Error(c.Writer, err.Error(),

@@ -145,16 +145,24 @@ func (j *JobHandler) DeleteJobById(c *gin.Context) {
 	jobAdCollection := j.repo.GetCollection(dbName, jobAdCollName)
 
 	objectId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		log.Println("Invalid id")
+	}
 
 	var job domain.Job
 
 	err = jobCollection.FindOne(ctx, bson.M{"_id": objectId}).Decode(&job)
-
-	_, err = jobAdCollection.DeleteMany(ctx, bson.D{{Key: "job_id", Value: job.Id}})
-
 	if err != nil {
 		http.Error(c.Writer, err.Error(),
 			http.StatusInternalServerError)
+		j.logger.Println(err)
+	}
+
+	results, err := jobAdCollection.CountDocuments(ctx, bson.D{{Key: "job_id", Value: job.Id}})
+
+	if results > 0 {
+		http.Error(c.Writer, "There are existing job ads for this job",
+			http.StatusForbidden)
 		j.logger.Println(err)
 	}
 

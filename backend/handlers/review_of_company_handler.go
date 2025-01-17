@@ -147,6 +147,9 @@ func (rw *ReviewOfCompanyHandler) DeleteReviewById(c *gin.Context) {
 	reviewCollection := rw.repo.GetCollection(dbName, ReviewOfCompanyCollName)
 
 	objectId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		log.Println("Invalid id")
+	}
 
 	_, err = reviewCollection.DeleteOne(ctx, bson.D{{Key: "_id", Value: objectId}})
 
