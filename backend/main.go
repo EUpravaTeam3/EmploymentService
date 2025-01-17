@@ -38,6 +38,7 @@ func main() {
 	jobHandler := handlers.NewJobHandler(logger, store)
 	newsHandler := handlers.NewNewsHandler(logger, store)
 	jobAdHandler := handlers.NewJobAdHandler(logger, store)
+	reviewOfCompanyHandler := handlers.NewReviewOfCompanyHandler(logger, store)
 
 	router := gin.New()
 	router.Use(employmentHandler.CORSMiddleware())
@@ -58,6 +59,12 @@ func main() {
 	router.POST("/jobad", jobAdHandler.PostJobAd)
 	router.PUT("/jobad/{jobad_id}", jobAdHandler.EditJobAd)
 	router.DELETE("/jobad/{jobad_id}", jobAdHandler.DeleteJobAdById)
+
+	router.GET("/reviewofcompany/{company_id}", reviewOfCompanyHandler.GetReviewsOfCompany)
+	router.GET("/reviewofcompany/{review_id}", reviewOfCompanyHandler.GetReviewById)
+	router.POST("/reviewofcompany", reviewOfCompanyHandler.PostReview)
+	router.PUT("/reviewofcompany/{review_id}", reviewOfCompanyHandler.EditReview)
+	router.DELETE("/reviewofcompany/{review_id}", reviewOfCompanyHandler.DeleteReviewById)
 
 	router.Run(":" + port)
 
