@@ -2,7 +2,7 @@ package domain
 
 import "time"
 
-type Citizen struct {
+type User struct {
 	UCN         string    `bson:"ucn"`
 	Name        string    `bson:"name"`
 	LastName    string    `bson:"lastName"`
@@ -10,4 +10,5 @@ type Citizen struct {
 	Address     string    `bson:"address"`
 	Email       string    `bson:"email"`
 	Password    string    `bson:"password"`
+	Role        string    `bson:"role"`
 }

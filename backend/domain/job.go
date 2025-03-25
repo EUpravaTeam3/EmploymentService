@@ -11,7 +11,7 @@ type Job struct {
 	Id               primitive.ObjectID `bson:"_id,omitempty"`
 	PoistionName     string             `bson:"position_name"`
 	Pay              int                `bson:"pay"`
-	EmployerId       primitive.ObjectID `bson:"employer_id"`
+	CompanyId        primitive.ObjectID `bson:"company_id"`
 	NumOfEmployees   int                `bson:"num_of_employees"`
 	EmployeeCapacity int                `bson:"employee_capacity"`
 }

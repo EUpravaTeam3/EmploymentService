@@ -88,13 +88,13 @@ func (er *EmploymentRepo) AddDiplomaToCV(diploma *domain.Diploma) error {
 
 }
 
-func (er *EmploymentRepo) FindCompanyByJobId(jobId primitive.ObjectID) (domain.Employer, error) {
+func (er *EmploymentRepo) FindCompanyByJobId(jobId primitive.ObjectID) (domain.Company, error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	var job domain.Job
-	var company domain.Employer
+	var company domain.Company
 
 	jobCollection := er.getCollection("jobs")
 	companyCollection := er.getCollection("companies")
@@ -105,7 +105,7 @@ func (er *EmploymentRepo) FindCompanyByJobId(jobId primitive.ObjectID) (domain.E
 		return company, err
 	}
 
-	err = companyCollection.FindOne(ctx, bson.M{"_id": job.EmployerId}).Decode(&company)
+	err = companyCollection.FindOne(ctx, bson.M{"_id": job.CompanyId}).Decode(&company)
 	if err != nil {
 		er.logger.Println(err)
 		return company, err

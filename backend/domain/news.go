@@ -9,7 +9,7 @@ import (
 
 type News struct {
 	Id          primitive.ObjectID `bson:"_id,omitempty"`
-	EmployerId  primitive.ObjectID `bson:"employer_id"`
+	CompanyId   primitive.ObjectID `bson:"employer_id"`
 	Title       string             `bson:"title"`
 	Description string             `bson:"description"`
 }

@@ -2,7 +2,7 @@ package domain
 
 import "go.mongodb.org/mongo-driver/bson/primitive"
 
-type Employer struct {
+type Company struct {
 	Id                primitive.ObjectID `bson:"_id,omitempty"`
 	CompanyName       string             `bson:"company_name"`
 	Industry          string             `bson:"industry"`
