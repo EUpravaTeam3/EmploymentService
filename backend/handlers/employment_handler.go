@@ -16,6 +16,10 @@ func NewEmploymentHandler(l *log.Logger, r *repositories.EmploymentRepo) *Employ
 	return &EmploymentHandler{l, r}
 }
 
+func (e *EmploymentHandler) EmployApplicant(c *gin.Context) {
+
+}
+
 func (e *EmploymentHandler) CORSMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
