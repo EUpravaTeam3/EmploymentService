@@ -26,20 +26,36 @@ func main() {
 	logger := log.New(os.Stdout, "[product-api] ", log.LstdFlags)
 	storeLogger := log.New(os.Stdout, "[employment-store] ", log.LstdFlags)
 
-	store, err := repositories.New(timeoutContext, storeLogger)
+	empStore, err := repositories.NewEmp(timeoutContext, storeLogger)
 	if err != nil {
 		logger.Fatal(err)
 	}
-	defer store.Disconnect(timeoutContext)
+	defer empStore.DisconnectEmp(timeoutContext)
 
-	store.Ping()
+	compStore, err := repositories.NewCompanyRepo(timeoutContext, storeLogger)
+	if err != nil {
+		logger.Fatal(err)
+	}
+	defer compStore.DisconnectComp(timeoutContext)
 
-	employmentHandler := handlers.NewEmploymentHandler(logger, store)
-	jobHandler := handlers.NewJobHandler(logger, store)
-	newsHandler := handlers.NewNewsHandler(logger, store)
-	jobAdHandler := handlers.NewJobAdHandler(logger, store)
-	reviewOfCompanyHandler := handlers.NewReviewOfCompanyHandler(logger, store)
-	applicantHandler := handlers.NewApplicantHandler(logger, store)
+	userStore, err := repositories.NewUserRepo(timeoutContext, storeLogger)
+	if err != nil {
+		logger.Fatal(err)
+	}
+	defer userStore.DisconnectUser(timeoutContext)
+
+	empStore.PingEmp()
+	userStore.PingUser()
+	compStore.PingComp()
+
+	employmentHandler := handlers.NewEmploymentHandler(logger, empStore)
+	jobHandler := handlers.NewJobHandler(logger, empStore)
+	newsHandler := handlers.NewNewsHandler(logger, empStore)
+	jobAdHandler := handlers.NewJobAdHandler(logger, empStore)
+	reviewOfCompanyHandler := handlers.NewReviewOfCompanyHandler(logger, empStore)
+	applicantHandler := handlers.NewApplicantHandler(logger, empStore)
+	userHandler := handlers.NewUserHandler(logger, userStore)
+	companyHandler := handlers.NewCompanyHandler(logger, compStore)
 
 	router := gin.New()
 	router.Use(employmentHandler.CORSMiddleware())
@@ -72,6 +88,13 @@ func main() {
 	router.GET("/applicant/{applicant_id}", applicantHandler.GetApplicantById)
 	router.POST("/applicant", applicantHandler.PostApplicant)
 	router.DELETE("/applicant/{applicant_id}", applicantHandler.DeleteApplicantById)
+
+	router.POST("/user", userHandler.CreateUser)
+
+	router.POST("/company", companyHandler.CreateCompany)
+	router.GET("/company", companyHandler.GetCompanies)
+
+	router.POST("/employee", employmentHandler.EmployApplicant)
 
 	router.Run(":" + port)
 

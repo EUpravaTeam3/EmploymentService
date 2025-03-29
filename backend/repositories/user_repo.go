@@ -3,12 +3,14 @@ package repositories
 import (
 	"context"
 	"employment-service/domain"
+	"fmt"
 	"log"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
 type UserRepo struct {
@@ -52,4 +54,32 @@ func (ur *UserRepo) FindUserByUcn(ucn string) (domain.User, error) {
 	}
 
 	return user, nil
+}
+
+// Disconnect from database
+func (pr *UserRepo) DisconnectUser(ctx context.Context) error {
+	err := pr.Cli.Disconnect(ctx)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// Check database connection
+func (pr *UserRepo) PingUser() {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	// Check connection -> if there's no error, connection is established
+	err := pr.Cli.Ping(ctx, readpref.Primary())
+	if err != nil {
+		pr.logger.Println(err)
+	}
+
+	// Print available databases
+	databases, err := pr.Cli.ListDatabaseNames(ctx, bson.M{})
+	if err != nil {
+		pr.logger.Println(err)
+	}
+	fmt.Println(databases)
 }

@@ -174,3 +174,26 @@ func (j *JobHandler) DeleteJobById(c *gin.Context) {
 		j.logger.Println(err)
 	}
 }
+
+func (j *JobHandler) GetJobByJobAdId(jobAdId primitive.ObjectID) (domain.Job, error) {
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	var jobAd domain.JobAd
+	var job domain.Job
+
+	jobAdCollection := j.repo.GetCollection(dbName, jobAdCollName)
+	var err = jobAdCollection.FindOne(ctx, bson.M{"_id": jobAdId}).Decode(&jobAd)
+	if err != nil {
+		return job, err
+	}
+
+	jobCollection := j.repo.GetCollection(dbName, JobCollName)
+	err = jobCollection.FindOne(ctx, bson.M{"_id": jobAd.JobId}).Decode(&job)
+	if err != nil {
+		return job, err
+	}
+
+	return job, nil
+}

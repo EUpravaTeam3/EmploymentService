@@ -3,6 +3,7 @@ package repositories
 import (
 	"context"
 	"employment-service/domain"
+	"fmt"
 	"log"
 	"time"
 
@@ -10,6 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
 type CompanyRepo struct {
@@ -30,11 +32,9 @@ func NewCompanyRepo(ctx context.Context, logger *log.Logger) (*CompanyRepo, erro
 	}, nil
 }
 
-func (cr *CompanyRepo) GetCollection(collectionName string) *mongo.Collection {
+func (cr *CompanyRepo) GetCollection(dbName string, collectionName string) *mongo.Collection {
 
-	database := cr.Cli.Database("mongoDemo")
-	collection := database.Collection(collectionName)
-	return collection
+	return cr.Cli.Database(dbName).Collection(collectionName)
 }
 
 func (cr *CompanyRepo) FindCompanyByJobId(jobId primitive.ObjectID) (domain.Company, error) {
@@ -45,8 +45,8 @@ func (cr *CompanyRepo) FindCompanyByJobId(jobId primitive.ObjectID) (domain.Comp
 	var job domain.Job
 	var company domain.Company
 
-	jobCollection := cr.GetCollection("jobs")
-	companyCollection := cr.GetCollection("companies")
+	jobCollection := cr.GetCollection("employmentdb", "jobs")
+	companyCollection := cr.GetCollection("employmentdb", "companies")
 
 	err := jobCollection.FindOne(ctx, bson.M{"_id": jobId}).Decode(&job)
 	if err != nil {
@@ -61,4 +61,32 @@ func (cr *CompanyRepo) FindCompanyByJobId(jobId primitive.ObjectID) (domain.Comp
 	}
 
 	return company, nil
+}
+
+// Disconnect from database
+func (pr *CompanyRepo) DisconnectComp(ctx context.Context) error {
+	err := pr.Cli.Disconnect(ctx)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// Check database connection
+func (pr *CompanyRepo) PingComp() {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	// Check connection -> if there's no error, connection is established
+	err := pr.Cli.Ping(ctx, readpref.Primary())
+	if err != nil {
+		pr.logger.Println(err)
+	}
+
+	// Print available databases
+	databases, err := pr.Cli.ListDatabaseNames(ctx, bson.M{})
+	if err != nil {
+		pr.logger.Println(err)
+	}
+	fmt.Println(databases)
 }

@@ -19,7 +19,7 @@ type EmploymentRepo struct {
 	logger *log.Logger
 }
 
-func New(ctx context.Context, logger *log.Logger) (*EmploymentRepo, error) {
+func NewEmp(ctx context.Context, logger *log.Logger) (*EmploymentRepo, error) {
 
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://employment_db:27017/"))
 	if err != nil {
@@ -83,6 +83,23 @@ func (er *EmploymentRepo) AddDiplomaToCV(diploma *domain.Diploma) error {
 	}
 
 	er.logger.Printf("result: %v\n", updateResult)
+
+	return nil
+
+}
+
+func (er *EmploymentRepo) AddEmployeeToCompany(employee domain.Employee) error {
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	employeeCollection := er.getCollection("employees")
+
+	_, err := employeeCollection.InsertOne(ctx, &employee)
+
+	if err != nil {
+		return err
+	}
 
 	return nil
 
@@ -158,7 +175,7 @@ func DBinstance() *mongo.Client {
 var Client *mongo.Client = DBinstance()
 
 // Disconnect from database
-func (pr *EmploymentRepo) Disconnect(ctx context.Context) error {
+func (pr *EmploymentRepo) DisconnectEmp(ctx context.Context) error {
 	err := pr.Cli.Disconnect(ctx)
 	if err != nil {
 		return err
@@ -167,7 +184,7 @@ func (pr *EmploymentRepo) Disconnect(ctx context.Context) error {
 }
 
 // Check database connection
-func (pr *EmploymentRepo) Ping() {
+func (pr *EmploymentRepo) PingEmp() {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
