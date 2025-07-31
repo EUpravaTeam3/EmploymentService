@@ -4,11 +4,17 @@ import { CommonModule } from '@angular/common';
 import { AppComponent } from './app.component';
 import { WelcomePageComponent } from './components/welcome-page/welcome-page.component';
 import { ProfilePageComponent } from './components/profile-page/profile-page.component';
+import { CreateJobAdComponent } from './components/create-jobad/create-jobad.component';
+import { JobadComponent } from './components/jobad/jobad.component';
+import { NewsComponent } from './components/news/news.component';
 
 const routes: Routes = [
   {path: '', pathMatch:'full', component: WelcomePageComponent},
   {path: 'welcome-page', component: WelcomePageComponent},
-  {path: 'profile-page', component: ProfilePageComponent}]
+  {path: 'profile-page', component: ProfilePageComponent},
+  {path: 'jobad', component: JobadComponent},
+  {path: 'jobads/create', component: CreateJobAdComponent},
+  {path: 'news', component: NewsComponent}]
 ;
 
 @NgModule({

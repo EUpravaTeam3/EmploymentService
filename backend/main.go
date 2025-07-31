@@ -59,6 +59,7 @@ func main() {
 
 	router := gin.New()
 	router.Use(employmentHandler.CORSMiddleware())
+	//router.Use(jobAdHandler.JobadCORSMiddleware())
 	router.GET("/jobs", jobHandler.GetJobs)
 	router.GET("/job/{job_id}", jobHandler.GetJobById)
 	router.POST("/job", jobHandler.PostJob)

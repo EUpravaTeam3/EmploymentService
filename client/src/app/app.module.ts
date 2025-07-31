@@ -16,13 +16,20 @@ import { AuthService } from './services/auth.service';
 
 import { NgxCaptchaModule } from 'ngx-captcha';
 import { ProfilePageComponent } from './components/profile-page/profile-page.component';
+import { JobadComponent } from './components/jobad/jobad.component';
+import { JobAdService } from './services/jobad.service';
+import { CreateJobAdComponent } from './components/create-jobad/create-jobad.component';
+import { NewsComponent } from './components/news/news.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     WelcomePageComponent,
     NavBarComponent,
-    ProfilePageComponent
+    ProfilePageComponent,
+    JobadComponent,
+    CreateJobAdComponent,
+    NewsComponent
   ],
   imports: [
     BrowserModule,
@@ -40,7 +47,8 @@ import { ProfilePageComponent } from './components/profile-page/profile-page.com
   ],
   providers: [ApiService,
     ConfigService,
-    AuthService],
+    AuthService,
+    JobAdService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

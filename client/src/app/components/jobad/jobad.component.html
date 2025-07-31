@@ -1,0 +1,9 @@
+<nav-bar></nav-bar>
+<a routerLink="/jobads/create">Create New Job Ad</a>
+<ul>
+    <li *ngFor="let job of jobAds">
+      <h3>{{ job.ad_title }}</h3>
+      <p>{{ job.job_description }}</p>
+      <button (click)="deleteJobAd(job.job_ad_id!)">Delete</button>
+    </li>
+  </ul>

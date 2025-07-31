@@ -1,0 +1,29 @@
+<nav-bar></nav-bar>
+<h2>Create Job Ad</h2>
+<form [formGroup]="jobAdForm" (ngSubmit)="onSubmit()">
+  <div>
+    <label>Title:</label>
+    <input formControlName="ad_title" class="form-control" />
+  </div>
+
+  <div>
+    <label>Description:</label>
+    <textarea formControlName="job_description" class="form-control"></textarea>
+  </div>
+
+  <div>
+    <label>Qualification:</label>
+    <input formControlName="qualification" class="form-control" />
+  </div>
+
+  <div>
+    <label>Job Type:</label>
+    <select formControlName="job_type" class="form-control">
+      <option value="Full-time">Full-time</option>
+      <option value="Part-time">Part-time</option>
+      <option value="Contract">Contract</option>
+    </select>
+  </div>
+
+  <button type="submit" [disabled]="jobAdForm.invalid">Create</button>
+</form>

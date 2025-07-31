@@ -1,0 +1,26 @@
+<nav-bar></nav-bar>
+<h2>Create News</h2>
+<form (ngSubmit)="createNews()">
+  <div>
+    <label for="companyId">Company</label>
+    <input id="companyId" [(ngModel)]="newNews.employer_id" name="companyId"  class="form-control">
+  </div>
+  <div>
+    <label for="title">Title:</label>
+    <input id="title" [(ngModel)]="newNews.title" name="title" required class="form-control">
+  </div>
+  <div>
+    <label for="description">Description:</label>
+    <textarea id="description" [(ngModel)]="newNews.description" name="description" class="form-control" required></textarea>
+  </div>
+  <button type="submit">Create News</button>
+</form>
+
+<hr>
+<h2>News from companies</h2>
+<div>
+  <div *ngFor="let news of newsList">
+    <strong>{{ news.title }}</strong>: {{ news.description }}
+    <button (click)="deleteNews(news._id!)">Delete</button>
+  </div>
+</div>

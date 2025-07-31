@@ -8,13 +8,13 @@ import (
 )
 
 type News struct {
-	Id          primitive.ObjectID `bson:"_id,omitempty"`
-	CompanyId   primitive.ObjectID `bson:"employer_id"`
-	Title       string             `bson:"title"`
-	Description string             `bson:"description"`
+	Id          primitive.ObjectID `bson:"_id,omitempty" json:"_id,omitempty"`
+	CompanyId   primitive.ObjectID `bson:"employer_id" json:"companyId"`
+	Title       string             `bson:"title" json:"title"`
+	Description string             `bson:"description" json:"description"`
 }
 
-type AllNews []*Job
+type AllNews []*News
 
 func (j *News) ToJSON(w io.Writer) error {
 	e := json.NewEncoder(w)
