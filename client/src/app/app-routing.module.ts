@@ -7,6 +7,7 @@ import { ProfilePageComponent } from './components/profile-page/profile-page.com
 import { CreateJobAdComponent } from './components/create-jobad/create-jobad.component';
 import { JobadComponent } from './components/jobad/jobad.component';
 import { NewsComponent } from './components/news/news.component';
+import { LoginComponent } from './components/login/login.component';
 
 const routes: Routes = [
   {path: '', pathMatch:'full', component: WelcomePageComponent},
@@ -14,7 +15,8 @@ const routes: Routes = [
   {path: 'profile-page', component: ProfilePageComponent},
   {path: 'jobad', component: JobadComponent},
   {path: 'jobads/create', component: CreateJobAdComponent},
-  {path: 'news', component: NewsComponent}]
+  {path: 'news', component: NewsComponent},
+  {path: 'sign-in', component: LoginComponent}]
 ;
 
 @NgModule({

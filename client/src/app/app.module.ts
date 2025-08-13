@@ -20,6 +20,7 @@ import { JobadComponent } from './components/jobad/jobad.component';
 import { JobAdService } from './services/jobad.service';
 import { CreateJobAdComponent } from './components/create-jobad/create-jobad.component';
 import { NewsComponent } from './components/news/news.component';
+import { LoginComponent } from './components/login/login.component';
 
 @NgModule({
   declarations: [
@@ -29,7 +30,8 @@ import { NewsComponent } from './components/news/news.component';
     ProfilePageComponent,
     JobadComponent,
     CreateJobAdComponent,
-    NewsComponent
+    NewsComponent,
+    LoginComponent
   ],
   imports: [
     BrowserModule,
