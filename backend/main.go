@@ -54,12 +54,10 @@ func main() {
 	jobAdHandler := handlers.NewJobAdHandler(logger, empStore)
 	reviewOfCompanyHandler := handlers.NewReviewOfCompanyHandler(logger, empStore)
 	applicantHandler := handlers.NewApplicantHandler(logger, empStore)
-	userHandler := handlers.NewUserHandler(logger, userStore)
 	companyHandler := handlers.NewCompanyHandler(logger, compStore)
 
 	router := gin.New()
-	router.Use(employmentHandler.CORSMiddleware())
-	//router.Use(jobAdHandler.JobadCORSMiddleware())
+	router.Use(jobAdHandler.JobadCORSMiddleware())
 	router.GET("/jobs", jobHandler.GetJobs)
 	router.GET("/job/{job_id}", jobHandler.GetJobById)
 	router.POST("/job", jobHandler.PostJob)
@@ -89,8 +87,6 @@ func main() {
 	router.GET("/applicant/{applicant_id}", applicantHandler.GetApplicantById)
 	router.POST("/applicant", applicantHandler.PostApplicant)
 	router.DELETE("/applicant/{applicant_id}", applicantHandler.DeleteApplicantById)
-
-	router.POST("/user", userHandler.CreateUser)
 
 	router.POST("/company", companyHandler.CreateCompany)
 	router.GET("/company", companyHandler.GetCompanies)
