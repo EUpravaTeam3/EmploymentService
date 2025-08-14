@@ -21,6 +21,7 @@ import { JobAdService } from './services/jobad.service';
 import { CreateJobAdComponent } from './components/create-jobad/create-jobad.component';
 import { NewsComponent } from './components/news/news.component';
 import { LoginComponent } from './components/login/login.component';
+import { CreateNewsComponent } from './components/create-news/create-news.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +32,8 @@ import { LoginComponent } from './components/login/login.component';
     JobadComponent,
     CreateJobAdComponent,
     NewsComponent,
-    LoginComponent
+    LoginComponent,
+    CreateNewsComponent
   ],
   imports: [
     BrowserModule,

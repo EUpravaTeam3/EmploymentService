@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { JobAdService } from 'src/app/services/jobad.service';
 import { JobAd } from 'src/app/model/jobad';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-jobad',
@@ -10,7 +11,7 @@ import { JobAd } from 'src/app/model/jobad';
 export class JobadComponent implements OnInit {
   jobAds: JobAd[] = [];
 
-  constructor(private jobAdService: JobAdService) {}
+  constructor(private jobAdService: JobAdService, private router: Router) {}
 
   ngOnInit(): void {
     this.loadJobAds();
@@ -28,5 +29,9 @@ export class JobadComponent implements OnInit {
         this.loadJobAds();
       });
     }
+  }
+
+    onCreateJobAd() {
+    this.router.navigate(['/jobads/create']);
   }
 }

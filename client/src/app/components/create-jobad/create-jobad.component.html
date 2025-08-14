@@ -1,29 +1,54 @@
 <nav-bar></nav-bar>
-<h2>Create Job Ad</h2>
-<form [formGroup]="jobAdForm" (ngSubmit)="onSubmit()">
-  <div>
-    <label>Title:</label>
-    <input formControlName="ad_title" class="form-control" />
-  </div>
+<div class="news-container">
+  <h2>Create Job Ad</h2>
 
-  <div>
-    <label>Description:</label>
-    <textarea formControlName="job_description" class="form-control"></textarea>
-  </div>
+  <form (ngSubmit)="onSubmit()" #jobForm="ngForm">
+    <div class="form-group">
+      <label for="ad_title">Job Title</label>
+      <input
+        type="text"
+        id="ad_title"
+        name="ad_title"
+        [(ngModel)]="ad_title"
+        required
+      />
+    </div>
 
-  <div>
-    <label>Qualification:</label>
-    <input formControlName="qualification" class="form-control" />
-  </div>
+    <div class="form-group">
+      <label for="job_description">Job Description</label>
+      <textarea
+        id="job_description"
+        name="job_description"
+        [(ngModel)]="job_description"
+        rows="4"
+        required
+      ></textarea>
+    </div>
 
-  <div>
-    <label>Job Type:</label>
-    <select formControlName="job_type" class="form-control">
-      <option value="Full-time">Full-time</option>
-      <option value="Part-time">Part-time</option>
-      <option value="Contract">Contract</option>
-    </select>
-  </div>
+    <div class="form-group">
+      <label for="qualification">Qualification</label>
+      <input
+        type="text"
+        id="qualification"
+        name="qualification"
+        [(ngModel)]="qualification"
+        required
+      />
+    </div>
 
-  <button type="submit" [disabled]="jobAdForm.invalid">Create</button>
-</form>
+    <div class="form-group">
+      <label for="job_type">Job Type</label>
+      <input
+        type="text"
+        id="job_type"
+        name="job_type"
+        [(ngModel)]="job_type"
+        required
+      />
+    </div>
+
+    <button type="submit" class="create-btn" [disabled]="!jobForm.valid">
+      Create Job Ad
+    </button>
+  </form>
+</div>

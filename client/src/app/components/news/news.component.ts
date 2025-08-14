@@ -1,20 +1,23 @@
 import { Component, OnInit } from '@angular/core';
 import { NewsService } from 'src/app/services/news.service';
 import { News } from 'src/app/model/news';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-news',
-  templateUrl: './news.component.html'
+  templateUrl: './news.component.html',
+  styleUrls: ['./news.component.css']
 })
+
 export class NewsComponent implements OnInit {
-  newsList: News[] = [];
+  news: News[] = [];
   newNews: News = {
     employer_id: '',
     title: '',
     description: ''
   };
 
-  constructor(private newsService: NewsService) {}
+  constructor(private newsService: NewsService, private router: Router) {}
 
   ngOnInit(): void {
     this.loadNews();
@@ -22,28 +25,17 @@ export class NewsComponent implements OnInit {
 
   loadNews(): void {
     this.newsService.getAllNews().subscribe(data => {
-      this.newsList = data
+      this.news = data
     });
   }
 
-  createNews(): void {
-    if (!this.newNews.employer_id || !this.newNews.title || !this.newNews.description) {
-      alert('All fields are required.');
-      return;
-    }
-
-    this.newsService.createNews(this.newNews).subscribe({
-      next: () => {
-        this.newNews = { employer_id: '', title: '', description: '' };
-        this.loadNews(); 
-      },
-      error: err => console.error('Error creating news', err)
-    });
-  }
-
-  deleteNews(id: string): void {
+  onDeleteNews(id: string): void {
     this.newsService.deleteNews(id).subscribe(() => {
-      this.newsList = this.newsList.filter(news => news._id !== id);
+      this.news = this.news.filter(news => news._id !== id);
     });
+  }
+
+  onCreateNews() {
+    this.router.navigateByUrl("/create-news")
   }
 }

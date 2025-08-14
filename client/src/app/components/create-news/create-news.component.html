@@ -1,0 +1,33 @@
+<nav-bar></nav-bar>
+<div class="news-container">
+  <h2>Create News</h2>
+
+  <form (ngSubmit)="onSubmit()" #newsForm="ngForm">
+
+    <div class="form-group">
+      <label for="title">Title</label>
+      <input
+        type="text"
+        id="title"
+        name="title"
+        [(ngModel)]="title"
+        required
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="description">Description</label>
+      <textarea
+        id="description"
+        name="description"
+        [(ngModel)]="description"
+        rows="4"
+        required
+      ></textarea>
+    </div>
+
+    <button type="submit" class="create-btn" [disabled]="!newsForm.valid">
+      Create News
+    </button>
+  </form>
+</div>

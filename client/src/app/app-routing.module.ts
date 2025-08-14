@@ -8,6 +8,7 @@ import { CreateJobAdComponent } from './components/create-jobad/create-jobad.com
 import { JobadComponent } from './components/jobad/jobad.component';
 import { NewsComponent } from './components/news/news.component';
 import { LoginComponent } from './components/login/login.component';
+import { CreateNewsComponent } from './components/create-news/create-news.component';
 
 const routes: Routes = [
   {path: '', pathMatch:'full', component: WelcomePageComponent},
@@ -16,7 +17,8 @@ const routes: Routes = [
   {path: 'jobad', component: JobadComponent},
   {path: 'jobads/create', component: CreateJobAdComponent},
   {path: 'news', component: NewsComponent},
-  {path: 'sign-in', component: LoginComponent}]
+  {path: 'sign-in', component: LoginComponent},
+  {path: 'create-news', component: CreateNewsComponent}]
 ;
 
 @NgModule({

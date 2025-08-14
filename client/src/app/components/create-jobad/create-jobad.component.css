@@ -1,19 +1,64 @@
-.form-control,
-.dataTable-input {
-    display: block;
-    width: 30%;
-    margin-left: 10px;
-    padding: 0.875rem 1.125rem;
-    font-size: 0.875rem;
-    font-weight: 400;
-    line-height: 1;
-    color: #69707a;
-    background-color: #fff;
-    background-clip: padding-box;
-    border: 1px solid #c5ccd6;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    border-radius: 0.35rem;
-    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+.news-container {
+  width: 80%;
+  margin: 40px auto;
+  padding: 20px;
+  background-color: #f3f3f3;
+  border: 1px solid #e7e7e7;
+  border-radius: 6px;
+  font-family: Arial, sans-serif;
+  color: #666;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #666;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+
+input,
+textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #e7e7e7;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+input:focus,
+textarea:focus {
+  outline: none;
+  border-color: #04aa6d;
+}
+
+.create-btn {
+  display: block;
+  width: 200px;
+  margin: 0 auto;
+  padding: 10px;
+  background-color: #04aa6d;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 15px;
+}
+
+.create-btn:hover {
+  background-color: #03995f;
+}
+
+.create-btn:disabled {
+  background-color: #aaa;
+  cursor: not-allowed;
 }

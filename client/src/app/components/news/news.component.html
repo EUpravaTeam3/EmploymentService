@@ -1,26 +1,22 @@
 <nav-bar></nav-bar>
-<h2>Create News</h2>
-<form (ngSubmit)="createNews()">
-  <div>
-    <label for="companyId">Company</label>
-    <input id="companyId" [(ngModel)]="newNews.employer_id" name="companyId"  class="form-control">
-  </div>
-  <div>
-    <label for="title">Title:</label>
-    <input id="title" [(ngModel)]="newNews.title" name="title" required class="form-control">
-  </div>
-  <div>
-    <label for="description">Description:</label>
-    <textarea id="description" [(ngModel)]="newNews.description" name="description" class="form-control" required></textarea>
-  </div>
-  <button type="submit">Create News</button>
-</form>
+<button class="create-btn" (click)="onCreateNews()">Create News</button>
+<div class="news-container">
+  <h2>Company News</h2>
 
-<hr>
-<h2>News from companies</h2>
-<div>
-  <div *ngFor="let news of newsList">
-    <strong>{{ news.title }}</strong>: {{ news.description }}
-    <button (click)="deleteNews(news._id!)">Delete</button>
+  <div class="news-list" *ngIf="news.length > 0; else noNews">
+    <div class="news-item" *ngFor="let item of news; let i = index">
+      <div class="news-content">
+        <h3>{{ item.title }}</h3>
+        <!-- <p class="company">{{ item.companyName }}</p> -->
+        <p class="description">{{ item.description }}</p>
+      </div>
+      <div class="news-actions">
+        <button class="delete-btn" (click)="onDeleteNews(item._id!)">Delete</button>
+      </div>
+    </div>
   </div>
+
+  <ng-template #noNews>
+    <p>No news available.</p>
+  </ng-template>
 </div>

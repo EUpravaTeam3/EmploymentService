@@ -1,9 +1,24 @@
 <nav-bar></nav-bar>
-<a routerLink="/jobads/create">Create New Job Ad</a>
-<ul>
-    <li *ngFor="let job of jobAds">
-      <h3>{{ job.ad_title }}</h3>
-      <p>{{ job.job_description }}</p>
-      <button (click)="deleteJobAd(job.job_ad_id!)">Delete</button>
-    </li>
-  </ul>
+<div class="news-container">
+  <h2>Job Ads</h2>
+
+  <div class="news-list" *ngIf="jobAds.length > 0; else noJobAds">
+    <div class="news-item" *ngFor="let job of jobAds; let i = index">
+      <div class="news-content">
+        <h3>{{ job.ad_title }}</h3>
+        <p><b>Type:</b> {{ job.job_type }}</p>
+        <p><b>Qualification:</b> {{ job.qualification }}</p>
+        <p class="description">{{ job.job_description }}</p>
+      </div>
+      <div class="news-actions">
+        <button class="delete-btn" (click)="deleteJobAd(job.job_ad_id!)">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #noJobAds>
+    <p>No job ads available.</p>
+  </ng-template>
+
+  <button class="create-btn" (click)="onCreateJobAd()">Create Job Ad</button>
+</div>

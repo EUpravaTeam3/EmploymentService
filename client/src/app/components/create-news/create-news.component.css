@@ -15,31 +15,29 @@ h2 {
   color: #666;
 }
 
-.news-list {
-  margin-bottom: 20px;
+.form-group {
+  margin-bottom: 15px;
 }
 
-.news-item {
-  border-bottom: 1px solid #e7e7e7;
-  padding: 10px 0;
+label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 6px;
 }
 
-.news-item:last-child {
-  border-bottom: none;
+input,
+textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #e7e7e7;
+  border-radius: 4px;
+  font-size: 14px;
 }
 
-.news-item h3 {
-  margin: 0;
-  color: #04aa6d;
-}
-
-.news-item .company {
-  font-style: italic;
-  margin: 4px 0;
-}
-
-.news-item .description {
-  margin-top: 6px;
+input:focus,
+textarea:focus {
+  outline: none;
+  border-color: #04aa6d;
 }
 
 .create-btn {
@@ -60,12 +58,7 @@ h2 {
   background-color: #03995f;
 }
 
-.delete-btn {
-  background-color: #197148;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 8px 12px;
-  font-size: 14px;
-  cursor: pointer;
+.create-btn:disabled {
+  background-color: #aaa;
+  cursor: not-allowed;
 }
