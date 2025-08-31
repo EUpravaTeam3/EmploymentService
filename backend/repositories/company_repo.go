@@ -37,24 +37,16 @@ func (cr *CompanyRepo) GetCollection(dbName string, collectionName string) *mong
 	return cr.Cli.Database(dbName).Collection(collectionName)
 }
 
-func (cr *CompanyRepo) FindCompanyByJobId(jobId primitive.ObjectID) (domain.Company, error) {
+func (cr *CompanyRepo) FindCompanyById(companyId primitive.ObjectID) (domain.Company, error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	var job domain.Job
 	var company domain.Company
 
-	jobCollection := cr.GetCollection("employmentdb", "jobs")
 	companyCollection := cr.GetCollection("employmentdb", "companies")
 
-	err := jobCollection.FindOne(ctx, bson.M{"_id": jobId}).Decode(&job)
-	if err != nil {
-		cr.logger.Println(err)
-		return company, err
-	}
-
-	err = companyCollection.FindOne(ctx, bson.M{"_id": job.CompanyId}).Decode(&company)
+	var err = companyCollection.FindOne(ctx, bson.M{"_id": companyId}).Decode(&company)
 	if err != nil {
 		cr.logger.Println(err)
 		return company, err

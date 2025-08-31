@@ -10,18 +10,7 @@ import { JobAdDTO } from 'src/app/model/jobadDTO';
   styleUrls: ['./jobad.component.css']
 })
 export class JobadComponent implements OnInit {
-  jobAds: JobAdDTO[] = [
-    {
-    _id: "00000000000000",
-    ad_title: "Looking for developers",
-    job_description: "You will work in front of a computer", //for testing 
-    qualification: "none",
-    job_type: "full-time",
-    job_id: "3444444444",
-    company_name: "Vega IT",
-    company_id: "324324435435"
-    }
-  ];
+  jobAds: JobAdDTO[] = [];
 
   searchTerm: string = '';
 

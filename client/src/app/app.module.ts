@@ -22,6 +22,7 @@ import { CreateJobAdComponent } from './components/create-jobad/create-jobad.com
 import { NewsComponent } from './components/news/news.component';
 import { LoginComponent } from './components/login/login.component';
 import { CreateNewsComponent } from './components/create-news/create-news.component';
+import { CompanyComponent } from './components/company/company.component';
 
 @NgModule({
   declarations: [
@@ -33,7 +34,8 @@ import { CreateNewsComponent } from './components/create-news/create-news.compon
     CreateJobAdComponent,
     NewsComponent,
     LoginComponent,
-    CreateNewsComponent
+    CreateNewsComponent,
+    CompanyComponent
   ],
   imports: [
     BrowserModule,

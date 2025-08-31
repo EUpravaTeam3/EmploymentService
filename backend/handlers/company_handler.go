@@ -27,15 +27,19 @@ func NewCompanyHandler(l *log.Logger, r *repositories.CompanyRepo) *CompanyHandl
 var companyDbName string = "employmentdb"
 var companyCollName string = "companies"
 
-func (ch *CompanyHandler) FindCompanyByJobId(id primitive.ObjectID) (domain.Company, error) {
+func (ch *CompanyHandler) FindCompanyById(c *gin.Context) {
 
-	var company, error = ch.repo.FindCompanyByJobId(id)
+	id, _ := primitive.ObjectIDFromHex(c.Param("id"))
+
+	var company, error = ch.repo.FindCompanyById(id)
 
 	if error != nil {
-		return company, error
+		c.JSON(http.StatusBadRequest, gin.H{"error": error.Error()})
+		return
 	}
 
-	return company, nil
+	e := json.NewEncoder(c.Writer)
+	e.Encode(company)
 }
 
 func (ch *CompanyHandler) CreateCompany(c *gin.Context) {

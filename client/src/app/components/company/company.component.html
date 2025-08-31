@@ -1,0 +1,21 @@
+<nav-bar></nav-bar>
+
+<div class="news-container">
+  <h2>Company Details</h2>
+
+  <div *ngIf="company; else noCompany">
+    <div class="news-item">
+      <h3>{{ company.company_name }}</h3>
+      <p><b>Industry:</b> {{ company.industry }}</p>
+      <p><b>Headquarters:</b> {{ company.headquarters }}</p>
+      <p><b>Info:</b> {{ company.company_info }}</p>
+      <p><b>Employees:</b> {{ company.number_of_employees }}</p>
+      <p><b>ID Number:</b> {{ company.id_number }}</p>
+      <p><b>Tax ID:</b> {{ company.tax_id_number }}</p>
+    </div>
+  </div>
+
+  <ng-template #noCompany>
+    <p>No company details available.</p>
+  </ng-template>
+</div>
