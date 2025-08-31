@@ -2,9 +2,15 @@
 <button class="create-btn" (click)="onCreateNews()">Create News</button>
 <div class="news-container">
   <h2>Company News</h2>
+    <h2><input
+    type="text"
+    placeholder="Search news..."
+    [(ngModel)]="searchTerm"
+    class="search-input"
+  /></h2>
 
-  <div class="news-list" *ngIf="news.length > 0; else noNews">
-    <div class="news-item" *ngFor="let item of news; let i = index">
+  <div class="news-list" *ngIf="filteredNews.length > 0; else noNews">
+    <div class="news-item" *ngFor="let item of filteredNews; let i = index">
       <div class="news-content">
         <h3>{{ item.title }}</h3>
         <!-- <p class="company">{{ item.companyName }}</p> -->

@@ -8,7 +8,7 @@ import (
 )
 
 type JobAd struct {
-	Id             primitive.ObjectID `bson:"job_ad_id,omitempty" json:"job_ad_id,omitempty"`
+	Id             primitive.ObjectID `bson:"_id,omitempty" json:"_id,omitempty"`
 	AdTitle        string             `bson:"ad_title" json:"ad_title"`
 	JobDescription string             `bson:"job_description" json:"job_description"`
 	Qualification  string             `bson:"qualification" json:"qualification"`

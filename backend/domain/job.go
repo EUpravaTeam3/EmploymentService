@@ -8,12 +8,12 @@ import (
 )
 
 type Job struct {
-	Id               primitive.ObjectID `bson:"_id,omitempty"`
-	PoistionName     string             `bson:"position_name"`
-	Pay              int                `bson:"pay"`
-	CompanyId        primitive.ObjectID `bson:"company_id"`
-	NumOfEmployees   int                `bson:"num_of_employees"`
-	EmployeeCapacity int                `bson:"employee_capacity"`
+	Id               primitive.ObjectID `bson:"_id,omitempty" json:"_id,omitempty"`
+	PoistionName     string             `bson:"position_name" json:"position_name"`
+	Pay              int                `bson:"pay" json:"pay"`
+	CompanyId        primitive.ObjectID `bson:"company_id" json:"company_id"`
+	NumOfEmployees   int                `bson:"num_of_employees" json:"num_of_employees"`
+	EmployeeCapacity int                `bson:"employee_capacity" json:"employee_capacity"`
 }
 
 type Jobs []*Job

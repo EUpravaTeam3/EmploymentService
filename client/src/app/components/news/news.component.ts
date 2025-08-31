@@ -16,6 +16,7 @@ export class NewsComponent implements OnInit {
     title: '',
     description: ''
   };
+  searchTerm: string = '';
 
   constructor(private newsService: NewsService, private router: Router) {}
 
@@ -37,5 +38,14 @@ export class NewsComponent implements OnInit {
 
   onCreateNews() {
     this.router.navigateByUrl("/create-news")
+  }
+
+      get filteredNews() {
+    if (!this.searchTerm) return this.news;
+    const term = this.searchTerm.toLowerCase();
+    return this.news.filter(newsObj =>
+      newsObj.title.toLowerCase().includes(this.searchTerm) ||
+      newsObj.description.toLowerCase().includes(this.searchTerm)
+    );
   }
 }

@@ -13,6 +13,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type JobAdHandler struct {
@@ -30,30 +31,46 @@ func (j *JobAdHandler) GetJobAds(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	var jobAds domain.JobAds
+	jobAdsColl := j.repo.GetCollection(dbName, jobAdCollName)
 
-	var JobAdCollection = j.repo.GetCollection(dbName, jobAdCollName)
+	pipeline := mongo.Pipeline{
+		{{"$lookup", bson.D{
+			{"from", "jobs"},
+			{"localField", "job_id"},
+			{"foreignField", "_id"},
+			{"as", "job"},
+		}}},
+		{{"$unwind", "$job"}},
+		{{"$lookup", bson.D{
+			{"from", "companies"},
+			{"localField", "job.company_id"},
+			{"foreignField", "_id"},
+			{"as", "company"},
+		}}},
+		{{"$unwind", "$company"}},
+		{{"$project", bson.D{
+			{"_id", 1},
+			{"ad_title", 1},
+			{"job_description", 1},
+			{"qualification", 1},
+			{"job_type", 1},
+			{"company_name", "$company.company_name"},
+			{"company_id", "$company._id"},
+		}}},
+	}
 
-	JobAdCursor, err := JobAdCollection.Find(ctx, bson.M{})
+	cursor, err := jobAdsColl.Aggregate(ctx, pipeline)
 	if err != nil {
-		j.logger.Println(err)
-		return
+		log.Fatal(err)
+	}
+	defer cursor.Close(ctx)
+
+	var jobAds []domain.JobAdDTO
+	if err = cursor.All(ctx, &jobAds); err != nil {
+		log.Fatal(err)
 	}
 
-	if err = JobAdCursor.All(ctx, &jobAds); err != nil {
-		http.Error(c.Writer, err.Error(),
-			http.StatusInternalServerError)
-		j.logger.Fatal(err)
-		return
-	}
-
-	err = jobAds.ToJSON(c.Writer)
-	if err != nil {
-		http.Error(c.Writer, err.Error(),
-			http.StatusInternalServerError)
-		j.logger.Fatal("Unable to convert to json :", err)
-		return
-	}
+	c.JSON(http.StatusOK, jobAds)
 }
 
 func (j *JobAdHandler) PostJobAd(c *gin.Context) {

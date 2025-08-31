@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { JobAd } from '../model/jobad';
+import { JobAdDTO } from '../model/jobadDTO';
 
 @Injectable({
   providedIn: 'root'
@@ -11,8 +12,8 @@ export class JobAdService {
 
   constructor(private http: HttpClient) {}
 
-  getJobAds(): Observable<JobAd[]> {
-    return this.http.get<JobAd[]>(this.apiUrl);
+  getJobAds(): Observable<JobAdDTO[]> {
+    return this.http.get<JobAdDTO[]>(this.apiUrl);
   }
 
   getJobAdById(id: string): Observable<JobAd> {
