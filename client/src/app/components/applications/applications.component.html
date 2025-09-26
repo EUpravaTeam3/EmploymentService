@@ -1,0 +1,28 @@
+<nav-bar></nav-bar>
+<div class="news-container">
+  <h2>My Pending Applications</h2>
+
+  <h2>
+    <input
+      type="text"
+      placeholder="Search applications..."
+      [(ngModel)]="searchTerm"
+      class="search-input"
+    />
+  </h2>
+
+  <div class="news-list" *ngIf="filteredApplications.length > 0; else noApplications">
+    <div class="news-item" *ngFor="let app of filteredApplications">
+      <div class="news-content">
+        <h3>{{ app.job_ad_title }}</h3>
+      </div>
+      <div class="news-actions">
+        <button class="delete-btn" (click)="onDeleteApplication(app.applicantId)">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #noApplications>
+    <p>No applications available.</p>
+  </ng-template>
+</div>

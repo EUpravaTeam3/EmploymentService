@@ -13,6 +13,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type ApplicantHandler struct {
@@ -96,6 +97,8 @@ func (a *ApplicantHandler) GetApplicantsByJobad(c *gin.Context) {
 func (a *ApplicantHandler) PostApplicant(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
+	ucn := c.Param("ucn")
+
 	applicantCollection := a.repo.GetCollection(dbName, ApplicantCollName)
 
 	var applicant *domain.Applicant
@@ -107,13 +110,24 @@ func (a *ApplicantHandler) PostApplicant(c *gin.Context) {
 
 	cvColl := a.repo.GetCollection("employmentdb", "cvs")
 
-	count, err := cvColl.CountDocuments(ctx, bson.M{"_id": applicant.CVId})
+	count, err := cvColl.CountDocuments(ctx, bson.M{"citizen_id": ucn})
 
 	if count == 0 {
 		http.Error(c.Writer, "You don't have a CV!",
 			http.StatusBadRequest)
 		return
 	}
+
+	var cv domain.CV
+
+	err = cvColl.FindOne(ctx, bson.M{"citizen_id": ucn}).Decode(&cv)
+	if err != nil {
+		http.Error(c.Writer, err.Error(),
+			http.StatusInternalServerError)
+		return
+	}
+
+	applicant.CVId = cv.Id
 
 	result, err := applicantCollection.InsertOne(ctx, &applicant)
 	if err != nil {
@@ -128,26 +142,53 @@ func (a *ApplicantHandler) PostApplicant(c *gin.Context) {
 	e.Encode(result)
 }
 
-func (a *ApplicantHandler) GetApplicantById(c *gin.Context) {
-	id := c.Param("applicant_id")
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+func (a *ApplicantHandler) GetApplicantByUcn(c *gin.Context) {
+	ucn := c.Param("ucn")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	var applicant domain.Applicant
+	applicantsCollection := a.repo.GetCollection("employmentdb", "applicants")
 
-	objectId, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		log.Println("Invalid id")
+	pipeline := mongo.Pipeline{
+		{{"$lookup", bson.D{
+			{"from", "cvs"},
+			{"localField", "cv_id"},
+			{"foreignField", "_id"},
+			{"as", "cv"},
+		}}},
+		{{"$unwind", "$cv"}},
+		{{"$match", bson.D{
+			{"cv.citizenUcn", ucn},
+		}}},
+		{{"$lookup", bson.D{
+			{"from", "jobAds"},
+			{"localField", "job_ad_id"},
+			{"foreignField", "_id"},
+			{"as", "jobAd"},
+		}}},
+		{{"$unwind", "$jobAd"}},
+		{{"$project", bson.D{
+			{"_id", 0},
+			{"applicant_id", "$id"},
+			{"job_ad_id", "$job_ad_id"},
+			{"cv_id", "$cv_id"},
+			{"job_ad_title", "$jobAd.ad_title"},
+		}}},
 	}
 
-	applicantCollection := a.repo.GetCollection(dbName, ApplicantCollName)
-	err = applicantCollection.FindOne(ctx, bson.M{"_id": objectId}).Decode(&applicant)
+	cursor, err := applicantsCollection.Aggregate(ctx, pipeline)
 	if err != nil {
-		http.Error(c.Writer, err.Error(),
-			http.StatusInternalServerError)
-		a.logger.Println(err)
+		log.Fatal("Aggregate error:", err)
 	}
-	applicant.ToJSON(c.Writer)
+	defer cursor.Close(ctx)
+
+	var results []ApplicantWithJob
+	if err := cursor.All(ctx, &results); err != nil {
+		log.Fatal("Decode error:", err)
+	}
+
+	c.JSON(http.StatusOK, results)
+
 }
 
 func (a *ApplicantHandler) DeleteApplicantById(c *gin.Context) {
@@ -169,4 +210,11 @@ func (a *ApplicantHandler) DeleteApplicantById(c *gin.Context) {
 			http.StatusInternalServerError)
 		a.logger.Println(err)
 	}
+}
+
+type ApplicantWithJob struct {
+	ApplicantID string `bson:"applicant_id" json:"applicant_id"`
+	JobAdID     string `bson:"job_ad_id" json:"job_ad_id"`
+	CVID        string `bson:"cv_id" json:"cv_id"`
+	JobAdTitle  string `bson:"job_ad_title" json:"job_ad_title"`
 }

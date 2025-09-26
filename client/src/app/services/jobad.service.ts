@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { JobAd } from '../model/jobad';
 import { JobAdDTO } from '../model/jobadDTO';
+import { Applicant } from '../model/applicant';
 
 @Injectable({
   providedIn: 'root'
@@ -32,7 +33,7 @@ export class JobAdService {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
 
-  applyForJobAd(jobAdId: string, applicantId: string): Observable<any> {
-    return this.http.post(this.apiUrl + "/applicant/" + jobAdId, applicantId)
+  applyForJobAd(application: Applicant, applicantId: string): Observable<any> {
+    return this.http.post(this.apiUrl + "/applicant/" + applicantId, application)
   }
 }

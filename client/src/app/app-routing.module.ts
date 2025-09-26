@@ -11,6 +11,8 @@ import { LoginComponent } from './components/login/login.component';
 import { CreateNewsComponent } from './components/create-news/create-news.component';
 import { CompanyComponent } from './components/company/company.component';
 import { CvComponent } from './components/cv/cv.component';
+import { ApplicationsComponent } from './components/applications/applications.component';
+import { ApplicantsComponent } from './components/applicants/applicants.component';
 
 const routes: Routes = [
   {path: '', pathMatch:'full', component: WelcomePageComponent},
@@ -22,7 +24,9 @@ const routes: Routes = [
   {path: 'sign-in', component: LoginComponent},
   {path: 'create-news', component: CreateNewsComponent},
   {path: 'company/:id', component: CompanyComponent},
-  {path: 'resume', component: CvComponent}
+  {path: 'resume', component: CvComponent},
+  {path: 'applications', component: ApplicationsComponent},
+  {path: 'applicants', component: ApplicantsComponent}
 ]
 ;
 

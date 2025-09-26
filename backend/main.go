@@ -85,8 +85,8 @@ func main() {
 
 	router.GET("/applicant", applicantHandler.GetApplicants)
 	router.GET("/applicant/jobad/{jobad_id}", applicantHandler.GetApplicantsByJobad)
-	router.GET("/applicant/{applicant_id}", applicantHandler.GetApplicantById)
-	router.POST("/applicant", applicantHandler.PostApplicant)
+	router.GET("/applicant/{ucn}", applicantHandler.GetApplicantByUcn)
+	router.POST("/applicant/{ucn}", applicantHandler.PostApplicant)
 	router.DELETE("/applicant/{applicant_id}", applicantHandler.DeleteApplicantById)
 
 	router.POST("/company", companyHandler.CreateCompany)

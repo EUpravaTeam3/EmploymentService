@@ -3,6 +3,7 @@ import { JobAdService } from 'src/app/services/jobad.service';
 import { JobAd } from 'src/app/model/jobad';
 import { Router } from '@angular/router';
 import { JobAdDTO } from 'src/app/model/jobadDTO';
+import { Applicant } from 'src/app/model/applicant';
 
 @Component({
   selector: 'app-jobad',
@@ -58,7 +59,11 @@ export class JobadComponent implements OnInit {
     const storedUserUcn = localStorage.getItem("eupravaUcn")
     if (storedUserUcn) {
       const userUcn = JSON.parse(storedUserUcn);
-      this.jobAdService.applyForJobAd(jobAdId, userUcn)
+      var application: Applicant = {
+        job_ad_id: jobAdId,
+        cv_id: ""
+      }
+      this.jobAdService.applyForJobAd(application, userUcn)
     }
   }
 }
