@@ -57,41 +57,80 @@ func (a *ApplicantHandler) GetApplicants(c *gin.Context) {
 	}
 }
 
-func (a *ApplicantHandler) GetApplicantsByJobad(c *gin.Context) {
+func (a *ApplicantHandler) GetApplicantsForCompany(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	id := c.Param("jobad_id")
+	ucn := c.Param("ucn")
 
-	var applicants domain.Applicants
-	var applicant domain.Applicant
+	pipeline := mongo.Pipeline{
+		// 1. Match company by owner_ucn
+		{{"$match", bson.D{{"owner_ucn", ucn}}}},
 
-	var applicantCollection = a.repo.GetCollection(dbName, ApplicantCollName)
+		// 2. Lookup jobs
+		{{"$lookup", bson.D{
+			{"from", "jobs"},
+			{"localField", "_id"},
+			{"foreignField", "company_id"},
+			{"as", "jobs"},
+		}}},
+		{{"$unwind", "$jobs"}},
 
-	objectId, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		log.Println("Invalid id")
+		// 3. Lookup jobAds
+		{{"$lookup", bson.D{
+			{"from", "jobAds"},
+			{"localField", "jobs._id"},
+			{"foreignField", "job_id"},
+			{"as", "jobAds"},
+		}}},
+		{{"$unwind", "$jobAds"}},
+
+		// 4. Lookup applicants
+		{{"$lookup", bson.D{
+			{"from", "applicants"},
+			{"localField", "jobAds._id"},
+			{"foreignField", "job_ad_id"},
+			{"as", "applicants"},
+		}}},
+		{{"$unwind", "$applicants"}},
+
+		// 5. Lookup CVs
+		{{"$lookup", bson.D{
+			{"from", "cvs"},
+			{"localField", "applicants.cv_id"},
+			{"foreignField", "_id"},
+			{"as", "cv"},
+		}}},
+		{{"$unwind", "$cv"}},
+
+		// 6. Project only needed fields
+		{{"$project", bson.D{
+			{"position_name", "$jobs.position_name"},
+			{"ad_title", "$jobAds.ad_title"},
+			{"citizen_ucn", "$cv.citizen_ucn"},
+			{"name", "$cv.name"},
+			{"email", "$cv.email"},
+			{"description", "$cv.description"},
+			{"work_experience", "$cv.work_experience"},
+			{"education", "$cv.education"},
+		}}},
 	}
 
-	applicantsCursor, err := applicantCollection.Find(ctx, bson.M{"job_ad_id": objectId})
+	companyColl := a.repo.GetCollection("employmentdb", "companies")
+
+	cursor, err := companyColl.Aggregate(ctx, pipeline)
 	if err != nil {
-		a.logger.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "aggregation failed", "details": err.Error()})
+		return
+	}
+	defer cursor.Close(ctx)
+
+	var results []bson.M
+	if err := cursor.All(ctx, &results); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to read cursor", "details": err.Error()})
 		return
 	}
 
-	for applicantsCursor.Next(ctx) {
-		if err := applicantsCursor.Decode(&applicant); err != nil {
-			log.Fatalf("Failed to decode document: %v", err)
-		}
-		applicants = append(applicants, &applicant)
-	}
-
-	err = applicants.ToJSON(c.Writer)
-	if err != nil {
-		http.Error(c.Writer, err.Error(),
-			http.StatusInternalServerError)
-		a.logger.Fatal("Unable to convert to json :", err)
-		return
-	}
+	c.JSON(http.StatusOK, results)
 }
 
 func (a *ApplicantHandler) PostApplicant(c *gin.Context) {
@@ -118,6 +157,12 @@ func (a *ApplicantHandler) PostApplicant(c *gin.Context) {
 		return
 	}
 
+	if count == 0 {
+		http.Error(c.Writer, "You don't have a CV!",
+			http.StatusBadRequest)
+		return
+	}
+
 	var cv domain.CV
 
 	err = cvColl.FindOne(ctx, bson.M{"citizen_id": ucn}).Decode(&cv)
@@ -128,6 +173,15 @@ func (a *ApplicantHandler) PostApplicant(c *gin.Context) {
 	}
 
 	applicant.CVId = cv.Id
+
+	count, err = applicantCollection.CountDocuments(ctx, bson.M{"cv_id": applicant.CVId,
+		"job_ad_id": applicant.JobAdId})
+
+	if count > 0 {
+		http.Error(c.Writer, "You already applied for this position!",
+			http.StatusBadRequest)
+		return
+	}
 
 	result, err := applicantCollection.InsertOne(ctx, &applicant)
 	if err != nil {

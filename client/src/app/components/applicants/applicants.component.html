@@ -1,1 +1,35 @@
-<p>applicants works!</p>
+<nav-bar></nav-bar>
+<div class="news-container">
+  <h2>Pending Applicants</h2>
+
+  <h2>
+    <input
+      type="text"
+      placeholder="Search applications..."
+      [(ngModel)]="searchTerm"
+      class="search-input"
+    />
+  </h2>
+
+  <div class="news-list" *ngIf="filteredApplications.length > 0; else noApplications">
+    <div class="news-item" *ngFor="let app of filteredApplications">
+      <div class="news-content">
+        <h3>{{ app.ad_title }}</h3>
+      </div>
+      <p>{{ app.position_name }}</p>
+      <p>{{ app.position_name }}</p>
+      <p>{{ app.name }}</p>
+      <p>{{ app.email }}</p>
+      <p>{{ app.education }}</p>
+      <p>{{ app.work_experience }}</p>
+      <p>{{ app.description }}</p>
+      <div class="news-actions">
+        <button class="delete-btn" (click)="onAcceptApplication(app)">Accept</button>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #noApplications>
+    <p>No applications available.</p>
+  </ng-template>
+</div><p>applicants works!</p>
