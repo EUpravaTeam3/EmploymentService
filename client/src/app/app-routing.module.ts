@@ -10,6 +10,7 @@ import { NewsComponent } from './components/news/news.component';
 import { LoginComponent } from './components/login/login.component';
 import { CreateNewsComponent } from './components/create-news/create-news.component';
 import { CompanyComponent } from './components/company/company.component';
+import { CvComponent } from './components/cv/cv.component';
 
 const routes: Routes = [
   {path: '', pathMatch:'full', component: WelcomePageComponent},
@@ -20,7 +21,8 @@ const routes: Routes = [
   {path: 'news', component: NewsComponent},
   {path: 'sign-in', component: LoginComponent},
   {path: 'create-news', component: CreateNewsComponent},
-  {path: 'company/:id', component: CompanyComponent}
+  {path: 'company/:id', component: CompanyComponent},
+  {path: 'resume', component: CvComponent}
 ]
 ;
 

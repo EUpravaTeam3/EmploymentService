@@ -105,6 +105,16 @@ func (a *ApplicantHandler) PostApplicant(c *gin.Context) {
 		return
 	}
 
+	cvColl := a.repo.GetCollection("employmentdb", "cvs")
+
+	count, err := cvColl.CountDocuments(ctx, bson.M{"_id": applicant.CVId})
+
+	if count == 0 {
+		http.Error(c.Writer, "You don't have a CV!",
+			http.StatusBadRequest)
+		return
+	}
+
 	result, err := applicantCollection.InsertOne(ctx, &applicant)
 	if err != nil {
 		http.Error(c.Writer, err.Error(),

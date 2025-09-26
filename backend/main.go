@@ -55,6 +55,7 @@ func main() {
 	reviewOfCompanyHandler := handlers.NewReviewOfCompanyHandler(logger, empStore)
 	applicantHandler := handlers.NewApplicantHandler(logger, empStore)
 	companyHandler := handlers.NewCompanyHandler(logger, compStore)
+	cvHandler := handlers.NewCvHandler(logger, compStore)
 
 	router := gin.New()
 	router.Use(jobAdHandler.JobadCORSMiddleware())
@@ -92,6 +93,9 @@ func main() {
 	router.GET("/company", companyHandler.GetCompanies)
 	router.GET("/company/{id}", companyHandler.FindCompanyById)
 	router.GET("/company/owner/{owner}", companyHandler.GetCompanyByOwnerUcn)
+
+	router.GET("/resume/{ucn}", cvHandler.FindCvByUcn)
+	router.POST("/resume/{ucn}", cvHandler.PostCv)
 
 	router.POST("/employee", employmentHandler.EmployApplicant)
 

@@ -1,0 +1,51 @@
+<nav-bar></nav-bar>
+<div class="resume-container">
+  <h2>Resume</h2>
+
+  <div class="action-bar">
+    <button class="create-btn" (click)="onEditResume()">Submit CV</button>
+    <button class="generate-btn" *ngIf="cv.education.length == 0" (click)="onGenerateDiploma()">Generate Diploma</button>
+  </div>
+
+  <div class="resume-section">
+    <h3>Name</h3>
+      <div class="resume-item">
+        <p>{{ cv.name }}</p>
+      </div>
+  </div>
+
+  <div class="resume-section">
+    <h3>Email</h3>
+      <div class="resume-item">
+        <p>{{ cv.email }}</p>
+      </div>
+  </div>
+
+<textarea [(ngModel)]="cv.description" class="edit-textarea"></textarea>
+    </ng-template>
+  </div>
+
+  <div class="resume-section">
+    <h3>Work Experience</h3>
+    <div class="resume-list" *ngIf="cv.workExperience.length > 0; else noWork">
+      <div class="resume-item" *ngFor="let job of cv.workExperience">
+        <p>{{ job }}</p>
+      </div>
+    </div>
+    <ng-template #noWork>
+      <p>No work experience listed.</p>
+    </ng-template>
+  </div>
+
+  <div class="resume-section">
+    <h3>Education</h3>
+    <div class="resume-list" *ngIf="cv.education.length > 0; else noEducation">
+      <div class="resume-item" *ngFor="let edu of cv.education">
+        <p>{{ edu }}</p>
+      </div>
+    </div>
+    <ng-template #noEducation>
+      <p>No education listed.</p>
+    </ng-template>
+  </div>
+</div>
