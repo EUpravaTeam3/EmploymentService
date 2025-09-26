@@ -18,4 +18,19 @@
   <ng-template #noCompany>
     <p>No company details available.</p>
   </ng-template>
+
+  <div *ngIf="myCompany">
+      <div class="news-list" *ngIf="filteredNews.length > 0; else noNews">
+    <div class="news-item" *ngFor="let item of filteredNews; let i = index">
+      <div class="news-content">
+        <h3>{{ item.title }}</h3>
+        <!-- <p class="company">{{ item.companyName }}</p> -->
+        <p class="description">{{ item.description }}</p>
+      </div>
+      <div class="news-actions">
+        <button class="accept-btn" (click)="onAccept(item._id!)">Accept</button>
+      </div>
+    </div>
+  </div>
+  </div>
 </div>

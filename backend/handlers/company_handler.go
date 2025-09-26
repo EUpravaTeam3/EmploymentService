@@ -13,6 +13,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type CompanyHandler struct {
@@ -43,13 +44,15 @@ func (ch *CompanyHandler) FindCompanyById(c *gin.Context) {
 }
 
 func (ch *CompanyHandler) CreateCompany(c *gin.Context) {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	/*ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	companyCollection := ch.repo.GetCollection(dbName, companyCollName)
 
-	var company *domain.Company
+	var company *domain.Company*/
+	fmt.Println("COMMUNICATION EUPRAVA EMPLOYMENT")
+	fmt.Println(c.Request.Body)
 
-	if err := c.ShouldBindJSON(&company); err != nil {
+	/*if err := c.ShouldBindJSON(&company); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -65,7 +68,7 @@ func (ch *CompanyHandler) CreateCompany(c *gin.Context) {
 
 	ch.logger.Printf("Documents ID: %v\n", result.InsertedID)
 	e := json.NewEncoder(c.Writer)
-	e.Encode(result)
+	e.Encode(result)*/
 }
 
 func (ch *CompanyHandler) GetCompanies(c *gin.Context) {
@@ -96,4 +99,31 @@ func (ch *CompanyHandler) GetCompanies(c *gin.Context) {
 		ch.logger.Fatal("Unable to convert to json :", err)
 		return
 	}
+}
+
+func (ch *CompanyHandler) GetCompanyByOwnerUcn(c *gin.Context) {
+	ownerUcn := c.Param("owner")
+	objID, err := primitive.ObjectIDFromHex(ownerUcn)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid owner ucn"})
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	var companyCollection = ch.repo.GetCollection(dbName, companyCollName)
+
+	var company domain.Company
+	err = companyCollection.FindOne(ctx, bson.M{"owner_ucn": objID}).Decode(&company)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			c.JSON(http.StatusNotFound, gin.H{"error": "company not found"})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, company)
 }

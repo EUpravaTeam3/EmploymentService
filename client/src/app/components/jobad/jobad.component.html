@@ -14,7 +14,7 @@
   <div class="news-list" *ngIf="filteredJobAds.length > 0; else noJobAds">
     <div class="news-item" *ngFor="let job of filteredJobAds; let i = index">
       <div class="news-content">
-        <div (click)="seeCompany(job._id)" style="cursor:pointer;">
+        <div (click)="seeCompany(job.company_id)" style="cursor:pointer;">
           <h3>{{ job.company_name }}: {{ job.ad_title }}</h3>
         </div>
         <p><b>Type:</b> {{ job.job_type }}</p>
@@ -23,6 +23,7 @@
       </div>
       <div class="news-actions">
         <button class="delete-btn" (click)="deleteJobAd(job._id!)">Delete</button>
+        <button class="delete-btn" (click)="applyForJobAd(job._id!)">Apply</button>
       </div>
     </div>
   </div>

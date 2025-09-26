@@ -14,4 +14,8 @@ export class CompanyService {
   getCompanyById(id: string): Observable<Company> {
     return this.http.get<Company>(`${this.apiUrl}/${id}`);
   }
+
+  getCompanyByOwner(ucn: string): Observable<Company> {
+    return this.http.get<Company>(`${this.apiUrl + "/owner"}/${ucn}`);
+  }
 }

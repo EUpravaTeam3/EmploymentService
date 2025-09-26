@@ -91,6 +91,7 @@ func main() {
 	router.POST("/company", companyHandler.CreateCompany)
 	router.GET("/company", companyHandler.GetCompanies)
 	router.GET("/company/{id}", companyHandler.FindCompanyById)
+	router.GET("/company/owner/{owner}", companyHandler.GetCompanyByOwnerUcn)
 
 	router.POST("/employee", employmentHandler.EmployApplicant)
 

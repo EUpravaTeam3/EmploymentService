@@ -11,6 +11,8 @@ import { CompanyService } from 'src/app/services/company.service';
 export class CompanyComponent {
 
     company: Company | null = null;
+    myCompany = false
+    applicants = []
 
   constructor(
     private route: ActivatedRoute,
@@ -24,6 +26,15 @@ export class CompanyComponent {
         next: (data) => (this.company = data),
         error: (err) => console.error(err)
       });
+    } else {
+      this.myCompany = true
+      var ucn = localStorage.getItem("eupravaUcn")
+      if (ucn){
+        this.companyService.getCompanyByOwner(ucn).subscribe({
+        next: (data) => (this.company = data),
+        error: (err) => console.error(err)
+      });
+      }
     }
   }
 }

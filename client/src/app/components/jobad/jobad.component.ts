@@ -53,4 +53,12 @@ export class JobadComponent implements OnInit {
       job.job_type.toLowerCase().includes(term)
     );
   }
+
+  applyForJobAd(jobAdId: string) {
+    const storedUserUcn = localStorage.getItem("eupravaUcn")
+    if (storedUserUcn) {
+      const userUcn = JSON.parse(storedUserUcn);
+      this.jobAdService.applyForJobAd(jobAdId, userUcn)
+    }
+  }
 }
