@@ -5,9 +5,7 @@ import (
 	"employment-service/handlers"
 	"employment-service/repositories"
 	"log"
-	"net/http"
 	"os"
-	"os/signal"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -101,26 +99,26 @@ func main() {
 
 	router.Run(":" + port)
 
-	server := http.Server{
-		Addr:         ":" + port,
-		IdleTimeout:  120 * time.Second,
-		ReadTimeout:  1 * time.Second,
-		WriteTimeout: 1 * time.Second,
-	}
+	// server := http.Server{
+	// 	Addr:         ":" + port,
+	// 	IdleTimeout:  120 * time.Second,
+	// 	ReadTimeout:  1 * time.Second,
+	// 	WriteTimeout: 1 * time.Second,
+	// }
 
 	logger.Println("Server listening on port", port)
 
-	go func() {
-		err := server.ListenAndServe()
-		if err != nil {
-			logger.Fatal(err)
-		}
-	}()
+	// go func() {
+	// 	err := server.ListenAndServe()
+	// 	if err != nil {
+	// 		logger.Fatal(err)
+	// 	}
+	// }()
 
-	sigCh := make(chan os.Signal)
-	signal.Notify(sigCh, os.Interrupt)
-	signal.Notify(sigCh, os.Kill)
+	// sigCh := make(chan os.Signal)
+	// signal.Notify(sigCh, os.Interrupt)
+	// signal.Notify(sigCh, os.Kill)
 
-	sig := <-sigCh
-	logger.Println("Received terminate, graceful shutdown", sig)
+	// sig := <-sigCh
+	// logger.Println("Received terminate, graceful shutdown", sig)
 }

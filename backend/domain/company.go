@@ -8,15 +8,15 @@ import (
 )
 
 type Company struct {
-	Id                primitive.ObjectID `bson:"_id,omitempty" json:"_id"`
-	CompanyName       string             `bson:"company_name" json:"company_name"`
-	Industry          string             `bson:"industry" json:"industry"`
-	Headquarters      string             `bson:"headquarters" json:"headquarters"`
-	CompanyInfo       string             `bson:"company_info" json:"company_info"`
-	NumberOfEmployees int                `bson:"number_of_employees" json:"number_of_employees"`
-	IdNumber          int                `bson:"id_number" json:"id_number"`
-	TaxIdNumber       int                `bson:"tax_id_number" json:"tax_id_number"`
-	OwnerUcn          string             `bson:"owner_ucn" json:"owner_ucn"`
+	Id               primitive.ObjectID `bson:"_id,omitempty" json:"_id"`
+	CompanyName      string             `bson:"company_name" json:"company_name"`
+	Status           string             `bson:"status" json:"status"`
+	IdNumber         string             `bson:"id_number" json:"id_number"`
+	TaxIdNumber      string             `bson:"tax_id_number" json:"tax_id_number"`
+	OwnerUcn         string             `bson:"owner_ucn" json:"owner_ucn"`
+	RegistrationDate DateOnly           `bson:"registration_date" json:"registration_date"`
+	Address          []interface{}      `bson:"address" json:"address"`
+	WorkField        []interface{}      `bson:"work_field" json:"work_field"`
 }
 
 type Companies []*Company

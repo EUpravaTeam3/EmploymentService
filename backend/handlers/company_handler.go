@@ -44,31 +44,75 @@ func (ch *CompanyHandler) FindCompanyById(c *gin.Context) {
 }
 
 func (ch *CompanyHandler) CreateCompany(c *gin.Context) {
-	/*ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	companyCollection := ch.repo.GetCollection(dbName, companyCollName)
 
-	var company *domain.Company*/
 	fmt.Println("COMMUNICATION EUPRAVA EMPLOYMENT")
 	fmt.Println(c.Request.Body)
 
-	/*if err := c.ShouldBindJSON(&company); err != nil {
+	var companyDTO RecievedCompany
+
+	if err := c.ShouldBindJSON(&companyDTO); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	result, err := companyCollection.InsertOne(ctx, &company)
-	if err != nil {
-		http.Error(c.Writer, err.Error(),
+	fmt.Println(companyDTO)
+
+	var company domain.Company
+
+	company.CompanyName = companyDTO.Name
+	company.IdNumber = companyDTO.RegistrationNumber
+	company.TaxIdNumber = companyDTO.PIB
+	company.Status = companyDTO.CompanyStatus
+	company.RegistrationDate = companyDTO.RegistrationDate
+	company.OwnerUcn = companyDTO.OwnerUCN
+	company.Address = companyDTO.Addresses
+	company.WorkField = companyDTO.WorkFields
+
+	_, errr := companyCollection.InsertOne(ctx, &company)
+	if errr != nil {
+		http.Error(c.Writer, errr.Error(),
 			http.StatusInternalServerError)
-		fmt.Println(err)
-		ch.logger.Println(err)
+		fmt.Println(errr)
+		ch.logger.Println(errr)
 		return
 	}
 
-	ch.logger.Printf("Documents ID: %v\n", result.InsertedID)
-	e := json.NewEncoder(c.Writer)
-	e.Encode(result)*/
+	response := map[string]interface{}{
+		"id":                 0,
+		"name":               companyDTO.Name,
+		"PIB":                companyDTO.PIB,
+		"registrationNumber": companyDTO.RegistrationNumber,
+		"registrationDate":   companyDTO.RegistrationDate.Format("2006-01-02"),
+		"companyStatus":      companyDTO.CompanyStatus,
+		"addresses":          companyDTO.Addresses,
+		"employee":           companyDTO.Workers,
+		"workFields":         []interface{}{},
+		"ownerUcn":           companyDTO.OwnerUCN,
+	}
+
+	c.JSON(http.StatusCreated, response)
+}
+
+type RecievedCompany struct {
+	ID                 interface{}     `bson:"_id,omitempty" json:"id,omitempty"`
+	Name               string          `bson:"name" json:"name"`
+	PIB                string          `bson:"PIB" json:"PIB"`
+	RegistrationNumber string          `bson:"registrationNumber" json:"registrationNumber"`
+	RegistrationDate   domain.DateOnly `bson:"registrationDate" json:"registrationDate"`
+	CompanyStatus      string          `bson:"companyStatus" json:"companyStatus"`
+	Addresses          []interface{}   `bson:"addresses" json:"addresses"`
+	WorkFields         []interface{}   `bson:"workFields" json:"workFields"`
+	Workers            []User          `bson:"workers" json:"worker"`
+	OwnerUCN           string          `bson:"owner_ucn" json:"ownerUcn"`
+}
+
+type User struct {
+	ID       primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
+	Username string             `bson:"username" json:"username"`
+	Email    string             `bson:"email" json:"email"`
 }
 
 func (ch *CompanyHandler) GetCompanies(c *gin.Context) {

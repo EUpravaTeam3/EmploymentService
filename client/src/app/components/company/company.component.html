@@ -6,10 +6,10 @@
   <div *ngIf="company; else noCompany">
     <div class="news-item">
       <h3>{{ company.company_name }}</h3>
-      <p><b>Industry:</b> {{ company.industry }}</p>
-      <p><b>Headquarters:</b> {{ company.headquarters }}</p>
-      <p><b>Info:</b> {{ company.company_info }}</p>
-      <p><b>Employees:</b> {{ company.number_of_employees }}</p>
+      <p><b>Registration date:</b> {{ company.registration_date }}</p>
+      <p><b>Headquarters:</b> {{ company.address }}</p>
+      <p><b>Headquarters:</b> {{ company.work_field }}</p>
+      <p><b>Status:</b> {{ company.status }}</p>
       <p><b>ID Number:</b> {{ company.id_number }}</p>
       <p><b>Tax ID:</b> {{ company.tax_id_number }}</p>
     </div>
@@ -19,12 +19,11 @@
     <p>No company details available.</p>
   </ng-template>
 
-  <div *ngIf="myCompany">
+  <!-- <div *ngIf="myCompany">
       <div class="news-list" *ngIf="filteredNews.length > 0; else noNews">
     <div class="news-item" *ngFor="let item of filteredNews; let i = index">
       <div class="news-content">
         <h3>{{ item.title }}</h3>
-        <!-- <p class="company">{{ item.companyName }}</p> -->
         <p class="description">{{ item.description }}</p>
       </div>
       <div class="news-actions">
@@ -32,5 +31,5 @@
       </div>
     </div>
   </div>
-  </div>
+  </div> -->
 </div>

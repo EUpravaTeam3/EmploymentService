@@ -34,7 +34,7 @@ export class ApplicationsComponent implements OnInit {
     );
   }
 
-  onDeleteApplication(applicantId: string) {
+  onDeleteApplication(applicantId: string | undefined) {
     this.http.delete(`http://localhost:8080/applicant/${applicantId}`)
       .subscribe(() => {
         this.applications = this.applications.filter(app => app.applicant_id !== applicantId);

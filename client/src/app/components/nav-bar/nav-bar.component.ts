@@ -25,7 +25,7 @@ export class NavBarComponent {
       localStorage.removeItem("eupravaSurname")
       localStorage.removeItem("eupravaAddress")
       
-      this.router.navigateByUrl("/sign-in")
+      //this.router.navigateByUrl("/sign-in") <- ***** treba link do Savine login stranice ****
     });
   }
 

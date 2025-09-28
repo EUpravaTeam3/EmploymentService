@@ -11,8 +11,8 @@
     />
   </h2>
 
-  <div class="news-list" *ngIf="filteredApplications.length > 0; else noApplications">
-    <div class="news-item" *ngFor="let app of filteredApplications">
+  <div class="news-list" *ngIf="applications.length > 0; else noApplications">
+    <div class="news-item" *ngFor="let app of applications">
       <div class="news-content">
         <h3>{{ app.ad_title }}</h3>
       </div>

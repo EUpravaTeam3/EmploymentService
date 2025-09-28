@@ -22,13 +22,11 @@
   </div>
 
 <textarea [(ngModel)]="cv.description" class="edit-textarea"></textarea>
-    </ng-template>
-  </div>
 
   <div class="resume-section">
     <h3>Work Experience</h3>
-    <div class="resume-list" *ngIf="cv.workExperience.length > 0; else noWork">
-      <div class="resume-item" *ngFor="let job of cv.workExperience">
+    <div class="resume-list" *ngIf="cv.work_experience.length > 0; else noWork">
+      <div class="resume-item" *ngFor="let job of cv.work_experience">
         <p>{{ job }}</p>
       </div>
     </div>
