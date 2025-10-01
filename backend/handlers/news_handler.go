@@ -135,9 +135,11 @@ func (n *NewsHandler) DeleteNewsById(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
+	objectId, _ := primitive.ObjectIDFromHex(id)
+
 	newsCollection := n.repo.GetCollection(dbName, newsCollName)
 
-	_, err := newsCollection.DeleteOne(ctx, bson.D{{Key: "_id", Value: id}})
+	_, err := newsCollection.DeleteOne(ctx, bson.D{{Key: "_id", Value: objectId}})
 
 	if err != nil {
 		http.Error(c.Writer, err.Error(),

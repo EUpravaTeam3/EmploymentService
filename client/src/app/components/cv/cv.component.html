@@ -39,7 +39,9 @@
     <h3>Education</h3>
     <div class="resume-list" *ngIf="cv.education.length > 0; else noEducation">
       <div class="resume-item" *ngFor="let edu of cv.education">
-        <p>{{ edu }}</p>
+        <h4>{{ edu.institution_name }}</h4>
+        <p>{{ edu.institution_type }}</p>
+        <p>Average grade: {{ edu.average_grade }}</p>
       </div>
     </div>
     <ng-template #noEducation>

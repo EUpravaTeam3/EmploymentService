@@ -32,7 +32,7 @@ export class CvComponent implements OnInit {
     this.cv.email = email
     }
       
-    this.http.get<CV>('http://localhost:8000/resume/citizen/' + ucn, { withCredentials: true })
+    this.http.get<CV>('http://localhost:8000/resume/' + ucn, { withCredentials: true })
       .subscribe(cv => {
       this.cv = cv
       }, err => {
@@ -48,23 +48,26 @@ export class CvComponent implements OnInit {
       return
     }
 
+    this.cv.citizen_ucn = localStorage.getItem("eupravaUcn")!
+    console.log(this.cv)
+
     this.http.post('http://localhost:8000/resume/' + this.cv.citizen_ucn, this.cv, { withCredentials: true})
-    .subscribe(res => console.log(res), err => alert(err))
+    .subscribe(res => console.log(res), err => {alert(err); console.log(err)})
   }
 
   onGenerateDiploma(){
 
     var diplomas: Diploma[] = [
-      { _id: "", institution_id: "", institution_name:"Faculty of technical sciences", institution_type:"college",
+      { institution_name:"Faculty of technical sciences", institution_type:"college",
         average_grade: 7, ucn: this.cv.citizen_ucn
       },
-      { _id: "", institution_id: "", institution_name:"Faculty of matehmatics", institution_type:"college",
+      { institution_name:"Faculty of matehmatics", institution_type:"college",
         average_grade: 9, ucn: this.cv.citizen_ucn
       },
-      { _id: "", institution_id: "", institution_name:"Faculty of agriculture", institution_type:"college",
+      { institution_name:"Faculty of agriculture", institution_type:"college",
         average_grade: 8, ucn: this.cv.citizen_ucn
       },
-      { _id: "", institution_id: "", institution_name:"Jovan Jovanovic Zmaj", institution_type:"high school",
+      { institution_name:"Jovan Jovanovic Zmaj", institution_type:"high school",
         average_grade: 5, ucn: this.cv.citizen_ucn
       }
     ]

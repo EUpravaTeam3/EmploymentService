@@ -1,12 +1,28 @@
 <ul>
   <li><a class="active" href="welcome-page">National employment service</a></li>
-  <li><a href="jobad">Search for a job</a></li>
-  <!-- <li><a href="profile-page">Profile</a></li> -->
+
   <li><a href="news">News</a></li>
-  <li><a href="company">Company</a></li>
-  <li><a href="applications">My applications</a></li>
-  <li><a href="applicants">Pending applicants</a></li>
+  <li><a href="jobad">Search for a job</a></li>
+
+  <div *ngIf="role != 'employer'">
   <li><a href="resume">My resume</a></li>
+  </div>
+
+  <div *ngIf="role == 'citizen'">
+  <li><a href="applications">My applications</a></li>
+  </div>
+
+  <div *ngIf="role == 'employee'">
+  <li><a href="employment">My employment</a></li>
+  <!-- <li><a href="company">Company</a></li> for company reviews -->
+  </div>
+
+  <div *ngIf="role == 'employer'">
+  <li><a href="company">Company</a></li>
+  <li><a href="applicants">Pending applicants</a></li>
+  <li><a href="jobs">Jobs in my company</a></li>
+  </div>
+
   <b><a (click)="logout()" style="cursor: pointer;">Log out</a></b>
   <!--<b>{{ucn}}</b>-->
 </ul>

@@ -147,11 +147,6 @@ func (ch *CompanyHandler) GetCompanies(c *gin.Context) {
 
 func (ch *CompanyHandler) GetCompanyByOwnerUcn(c *gin.Context) {
 	ownerUcn := c.Param("owner")
-	objID, err := primitive.ObjectIDFromHex(ownerUcn)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid owner ucn"})
-		return
-	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -159,7 +154,7 @@ func (ch *CompanyHandler) GetCompanyByOwnerUcn(c *gin.Context) {
 	var companyCollection = ch.repo.GetCollection(dbName, companyCollName)
 
 	var company domain.Company
-	err = companyCollection.FindOne(ctx, bson.M{"owner_ucn": objID}).Decode(&company)
+	err := companyCollection.FindOne(ctx, bson.M{"owner_ucn": ownerUcn}).Decode(&company)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			c.JSON(http.StatusNotFound, gin.H{"error": "company not found"})

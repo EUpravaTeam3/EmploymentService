@@ -10,6 +10,7 @@ import { ApplicantByUser } from 'src/app/model/applicantByUser';
 export class ApplicationsComponent implements OnInit {
   applications: ApplicantByUser[] = [];
   searchTerm: string = '';
+  ucn: string = '';
 
   constructor(private http: HttpClient) {}
 
@@ -19,12 +20,13 @@ export class ApplicationsComponent implements OnInit {
 
   loadApplications() {
     
-    var ucn = localStorage.getItem("eupravaUcn")
+    this.ucn = localStorage.getItem("eupravaUcn")!
 
-    this.http.get<ApplicantByUser[]>(`http://localhost:8080/applicant/` + ucn)
+    this.http.get<ApplicantByUser[]>(`http://localhost:8000/applicant/` + this.ucn)
       .subscribe(data => {
         this.applications = data;
-      });
+        console.log(data)
+      }, err => {console.log(err)});
   }
 
   get filteredApplications(): ApplicantByUser[] {
@@ -35,9 +37,11 @@ export class ApplicationsComponent implements OnInit {
   }
 
   onDeleteApplication(applicantId: string | undefined) {
-    this.http.delete(`http://localhost:8080/applicant/${applicantId}`)
+    this.http.delete(`http://localhost:8000/applicant/` + applicantId)
       .subscribe(() => {
-        this.applications = this.applications.filter(app => app.applicant_id !== applicantId);
+        window.location.reload()
+      }, err => {
+        console.log(err)
       });
   }
 }

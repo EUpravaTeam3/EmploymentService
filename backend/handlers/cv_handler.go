@@ -54,6 +54,10 @@ func (cvh *CvHandler) PostCv(c *gin.Context) {
 		return
 	}
 
+	fmt.Println(cv.CitizenUCN)
+	fmt.Println(cv.Email)
+	fmt.Println(cv.Education[0].AverageGrade)
+
 	cvCollection := cvh.repo.GetCollection(cvDbName, cvCollName)
 	count, err := cvCollection.CountDocuments(ctx, bson.M{"citizen_ucn": ucn})
 	if err != nil {

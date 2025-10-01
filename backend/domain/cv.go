@@ -8,13 +8,13 @@ import (
 )
 
 type CV struct {
-	Id             primitive.ObjectID `bson:"_id,omitempty"`
-	CitizenUCN     string             `bson:"citizen_ucn"`
-	Name           string             `bson:"name"`
-	Email          string             `bson:"email"`
-	Description    string             `bson:"description"`
-	WorkExperience []string           `bson:"work_experience"`
-	Education      []Diploma          `bson:"education"`
+	Id             primitive.ObjectID `bson:"_id,omitempty" json:"_id,omitempty"`
+	CitizenUCN     string             `bson:"citizen_ucn" json:"citizen_ucn"`
+	Name           string             `bson:"name" json:"name"`
+	Email          string             `bson:"email" json:"email"`
+	Description    string             `bson:"description" json:"description"`
+	WorkExperience []string           `bson:"work_experience" json:"work_experience"`
+	Education      []Diploma          `bson:"education" json:"education"`
 }
 
 type Cvs []*CV

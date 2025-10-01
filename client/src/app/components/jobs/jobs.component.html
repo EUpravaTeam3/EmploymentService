@@ -1,1 +1,67 @@
-<p>jobs works!</p>
+<nav-bar></nav-bar>
+<div class="news-container">
+  <h2>Jobs</h2>
+
+  <!-- Create job form -->
+  <form class="create-form" (ngSubmit)="onCreateJob()" #jobForm="ngForm">
+    <input
+      name="position_name"
+      type="text"
+      placeholder="Position name"
+      [(ngModel)]="newJob.position_name"
+      required
+      class="create-input"
+    />
+
+    <input
+      name="pay"
+      type="number"
+      placeholder="Pay"
+      [(ngModel)]="newJob.pay"
+      required
+      min="0"
+      class="create-input small"
+    />
+
+    <input
+      name="employee_capacity"
+      type="number"
+      placeholder="Capacity"
+      [(ngModel)]="newJob.employee_capacity"
+      required
+      min="1"
+      class="create-input small"
+    />
+
+    <button
+      type="submit"
+      class="create-btn"
+      [disabled]="jobForm.invalid || creating"
+    >
+      {{ creating ? 'Creating...' : 'Create Job' }}
+    </button>
+  </form>
+
+  <!-- Jobs list -->
+  <div class="news-list" *ngIf="jobs.length > 0; else noJobs">
+    <div class="news-item" *ngFor="let job of jobs; let i = index">
+      <div class="news-content">
+        <h3>{{ job.position_name }}</h3>
+        <p class="description">
+          Pay: {{ job.pay | currency:'EUR':'symbol':'1.0-0' }} &nbsp;|&nbsp;
+          Capacity: {{ job.employee_capacity }}
+        </p>
+      </div>
+
+      <div class="news-actions">
+        <button class="delete-btn" (click)="onDeleteJob(job._id, i)">
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #noJobs>
+    <p>No jobs available.</p>
+  </ng-template>
+</div>

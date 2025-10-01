@@ -166,7 +166,7 @@ func (j *JobHandler) DeleteJobById(c *gin.Context) {
 		j.logger.Println(err)
 	}
 
-	_, err = jobCollection.DeleteOne(ctx, bson.D{{Key: "_id", Value: id}})
+	_, err = jobCollection.DeleteOne(ctx, bson.D{{Key: "_id", Value: objectId}})
 
 	if err != nil {
 		http.Error(c.Writer, err.Error(),
@@ -196,4 +196,40 @@ func (j *JobHandler) GetJobByJobAdId(jobAdId primitive.ObjectID) (domain.Job, er
 	}
 
 	return job, nil
+}
+
+func (j *JobHandler) GetJobsByCompany(c *gin.Context) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	companyId := c.Param("company_id")
+
+	objectId, err := primitive.ObjectIDFromHex(companyId)
+
+	var jobs domain.Jobs
+
+	var jobCollection = j.repo.GetCollection(dbName, JobCollName)
+
+	jobsCursor, err := jobCollection.Find(ctx, bson.M{"company_id": objectId})
+	if err != nil {
+		j.logger.Println(err)
+		fmt.Println(err)
+		return
+	}
+
+	if err = jobsCursor.All(ctx, &jobs); err != nil {
+		http.Error(c.Writer, err.Error(),
+			http.StatusInternalServerError)
+		j.logger.Fatal(err)
+		fmt.Println(err)
+		return
+	}
+
+	err = jobs.ToJSON(c.Writer)
+	if err != nil {
+		http.Error(c.Writer, err.Error(),
+			http.StatusInternalServerError)
+		j.logger.Fatal("Unable to convert to json :", err)
+		return
+	}
 }

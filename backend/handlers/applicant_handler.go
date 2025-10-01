@@ -106,6 +106,7 @@ func (a *ApplicantHandler) GetApplicantsForCompany(c *gin.Context) {
 		{{"$project", bson.D{
 			{"position_name", "$jobs.position_name"},
 			{"ad_title", "$jobAds.ad_title"},
+			{"job_ad_id", "$jobAds._id"},
 			{"citizen_ucn", "$cv.citizen_ucn"},
 			{"name", "$cv.name"},
 			{"email", "$cv.email"},
@@ -147,9 +148,20 @@ func (a *ApplicantHandler) PostApplicant(c *gin.Context) {
 		return
 	}
 
+	fmt.Println("AAPLICANT")
+	fmt.Println(applicant.JobAdId)
+	fmt.Println(ucn)
+	fmt.Println(applicant.CVId)
+
 	cvColl := a.repo.GetCollection("employmentdb", "cvs")
 
-	count, err := cvColl.CountDocuments(ctx, bson.M{"citizen_id": ucn})
+	count, err := cvColl.CountDocuments(ctx, bson.M{"citizen_ucn": ucn})
+
+	if err != nil {
+		http.Error(c.Writer, err.Error(),
+			http.StatusInternalServerError)
+		return
+	}
 
 	if count == 0 {
 		http.Error(c.Writer, "You don't have a CV!",
@@ -165,7 +177,7 @@ func (a *ApplicantHandler) PostApplicant(c *gin.Context) {
 
 	var cv domain.CV
 
-	err = cvColl.FindOne(ctx, bson.M{"citizen_id": ucn}).Decode(&cv)
+	err = cvColl.FindOne(ctx, bson.M{"citizen_ucn": ucn}).Decode(&cv)
 	if err != nil {
 		http.Error(c.Writer, err.Error(),
 			http.StatusInternalServerError)
@@ -176,6 +188,14 @@ func (a *ApplicantHandler) PostApplicant(c *gin.Context) {
 
 	count, err = applicantCollection.CountDocuments(ctx, bson.M{"cv_id": applicant.CVId,
 		"job_ad_id": applicant.JobAdId})
+
+	if err != nil {
+		http.Error(c.Writer, err.Error(),
+			http.StatusInternalServerError)
+		fmt.Println(err)
+		a.logger.Println(err)
+		return
+	}
 
 	if count > 0 {
 		http.Error(c.Writer, "You already applied for this position!",
@@ -212,7 +232,7 @@ func (a *ApplicantHandler) GetApplicantByUcn(c *gin.Context) {
 		}}},
 		{{"$unwind", "$cv"}},
 		{{"$match", bson.D{
-			{"cv.citizenUcn", ucn},
+			{"cv.citizen_ucn", ucn},
 		}}},
 		{{"$lookup", bson.D{
 			{"from", "jobAds"},
@@ -223,7 +243,7 @@ func (a *ApplicantHandler) GetApplicantByUcn(c *gin.Context) {
 		{{"$unwind", "$jobAd"}},
 		{{"$project", bson.D{
 			{"_id", 0},
-			{"applicant_id", "$id"},
+			{"applicant_id", "$_id"},
 			{"job_ad_id", "$job_ad_id"},
 			{"cv_id", "$cv_id"},
 			{"job_ad_title", "$jobAd.ad_title"},
@@ -250,6 +270,7 @@ func (a *ApplicantHandler) DeleteApplicantById(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
+	fmt.Println(id)
 	applicantCollection := a.repo.GetCollection(dbName, ApplicantCollName)
 
 	objectId, err := primitive.ObjectIDFromHex(id)

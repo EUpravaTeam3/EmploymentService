@@ -32,8 +32,4 @@ export class JobAdService {
   deleteJobAd(id: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
-
-  applyForJobAd(application: Applicant, applicantId: string): Observable<any> {
-    return this.http.post(this.apiUrl + "/applicant/" + applicantId, application)
-  }
 }

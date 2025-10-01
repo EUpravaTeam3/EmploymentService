@@ -12,10 +12,10 @@ export class CompanyService {
   constructor(private http: HttpClient) {}
 
   getCompanyById(id: string): Observable<Company> {
-    return this.http.get<Company>(`${this.apiUrl}/${id}`);
+    return this.http.get<Company>(`http://localhost:8000/company/` + id);
   }
 
   getCompanyByOwner(ucn: string): Observable<Company> {
-    return this.http.get<Company>(`${this.apiUrl + "/owner"}/${ucn}`);
+    return this.http.get<Company>(`http://localhost:8000/company/owner/` + ucn);
   }
 }

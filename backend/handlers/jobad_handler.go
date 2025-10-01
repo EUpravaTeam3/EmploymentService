@@ -163,14 +163,14 @@ func (j *JobAdHandler) DeleteJobAdById(c *gin.Context) {
 		return
 	}
 
-	_, errApplicant := applicantsCollection.DeleteMany(ctx, bson.M{"job_ad_id": objectId})
+	_, errApplicant := applicantsCollection.DeleteMany(ctx, bson.D{{Key: "job_ad_id", Value: objectId}})
 	if errApplicant != nil {
 		http.Error(c.Writer, errApplicant.Error(),
 			http.StatusInternalServerError)
 		j.logger.Println(errApplicant)
 	}
 
-	_, errJobAd := jobAdCollection.DeleteOne(ctx, bson.D{{Key: "_id", Value: id}})
+	_, errJobAd := jobAdCollection.DeleteOne(ctx, bson.D{{Key: "_id", Value: objectId}})
 	if errJobAd != nil {
 		http.Error(c.Writer, errJobAd.Error(),
 			http.StatusInternalServerError)
@@ -186,11 +186,16 @@ func (j *JobAdHandler) DeleteJobAdById(c *gin.Context) {
 
 func (e *JobAdHandler) JobadCORSMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
-		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
-		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, "+
-			"X-CSRF-Token, token, Authorization, accept, origin, Cache-Control, X-Requested-With")
-		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE")
+		log.Printf("Incoming %s %s", c.Request.Method, c.Request.URL.Path)
+		fmt.Println("Incoming %s %s", c.Request.Method, c.Request.URL.Path)
+		origin := c.GetHeader("Origin")
+		if origin == "http://localhost:8084" || origin == "http://localhost:8005" {
+			c.Writer.Header().Set("Access-Control-Allow-Origin", origin)
+			c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+			c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, "+
+				"X-CSRF-Token, token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+			c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE")
+		}
 
 		if c.Request.Method == "OPTIONS" {
 			c.AbortWithStatus(204)

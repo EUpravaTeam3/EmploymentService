@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { CheckedUser } from 'src/app/model/roleResponse';
 import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
@@ -9,11 +10,30 @@ import { AuthService } from 'src/app/services/auth.service';
   templateUrl: './nav-bar.component.html',
   styleUrls: ['./nav-bar.component.css']
 })
-export class NavBarComponent {
+export class NavBarComponent implements OnInit {
 
   constructor(private authService: AuthService,
     private toastr: ToastrService, private http: HttpClient,
   private router: Router){}
+
+  role: string = ""
+
+  ngOnInit(): void {
+
+    //this.role = localStorage.getItem("eupravaUcn")!
+            this.http.get<CheckedUser>(`http://localhost:9090/user/employment`, {withCredentials: true})
+              .subscribe(data => {
+                console.log(data)
+                  localStorage.setItem("eupravaUcn", data.ucn)
+                  localStorage.setItem("eupravaEmail", data.email)
+                  localStorage.setItem("eupravaName", data.name)
+                  localStorage.setItem("eupravaSurname", data.surname)
+                  localStorage.setItem("eupravaRole", data.role)
+                  this.role = data.role
+              }, err => {
+                window.location.href = "http://localhost:4200/login"
+              });
+  }
 
   logout(){
       this.http.post('http://localhost:9090/user/logout', {
@@ -23,12 +43,10 @@ export class NavBarComponent {
       localStorage.removeItem("eupravaEmail")
       localStorage.removeItem("eupravaName")
       localStorage.removeItem("eupravaSurname")
-      localStorage.removeItem("eupravaAddress")
+      localStorage.removeItem("eupravaRole")
       
-      //this.router.navigateByUrl("/sign-in") <- ***** treba link do Savine login stranice ****
+      window.location.href = "http://localhost:4200/login"
     });
   }
-
-  //username = localStorage.getItem("eupravaUsername")
 
 }

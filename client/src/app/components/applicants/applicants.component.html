@@ -17,10 +17,9 @@
         <h3>{{ app.ad_title }}</h3>
       </div>
       <p>{{ app.position_name }}</p>
-      <p>{{ app.position_name }}</p>
       <p>{{ app.name }}</p>
       <p>{{ app.email }}</p>
-      <p>{{ app.education }}</p>
+      <p>{{ app.education[0] }}</p>
       <p>{{ app.work_experience }}</p>
       <p>{{ app.description }}</p>
       <div class="news-actions">
@@ -32,4 +31,4 @@
   <ng-template #noApplications>
     <p>No applications available.</p>
   </ng-template>
-</div><p>applicants works!</p>
+</div>

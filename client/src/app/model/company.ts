@@ -1,7 +1,6 @@
 export interface Company {
     _id?: string;
     company_name: string;
-    headquarters: string;
     status: string;
     registration_date: string
     id_number: number;

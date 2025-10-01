@@ -13,6 +13,7 @@ import { CompanyComponent } from './components/company/company.component';
 import { CvComponent } from './components/cv/cv.component';
 import { ApplicationsComponent } from './components/applications/applications.component';
 import { ApplicantsComponent } from './components/applicants/applicants.component';
+import { JobsComponent } from './components/jobs/jobs.component';
 
 const routes: Routes = [
   {path: '', pathMatch:'full', component: WelcomePageComponent},
@@ -26,7 +27,8 @@ const routes: Routes = [
   {path: 'company/:id', component: CompanyComponent},
   {path: 'resume', component: CvComponent},
   {path: 'applications', component: ApplicationsComponent},
-  {path: 'applicants', component: ApplicantsComponent}
+  {path: 'applicants', component: ApplicantsComponent},
+  {path: 'jobs', component: JobsComponent}
 ]
 ;
 

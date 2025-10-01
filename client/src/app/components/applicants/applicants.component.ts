@@ -20,15 +20,18 @@ export class ApplicantsComponent {
     
     var ucn = localStorage.getItem("eupravaUcn")
 
-    this.http.get<ApplicantByCompany[]>(`http://localhost:8080/applicant/company/` + ucn)
+    this.http.get<ApplicantByCompany[]>(`http://localhost:8000/applicant/company/` + ucn)
       .subscribe(data => {
+        console.log(data)
         this.applications = data;
+      }, err => {
+        console.log(err)
       });
   }
 
   onAcceptApplication(app: ApplicantByCompany){
-    this.http.post(`http://localhost:8080/applicant/employ`, app).subscribe(res =>
-      window.location.reload(), err => alert(err)
+    this.http.post(`http://localhost:8000/employee`, app, { withCredentials: true   }).subscribe(res =>
+      window.location.reload(), err => console.log(err)
     )
 }
 }
@@ -36,6 +39,7 @@ export class ApplicantsComponent {
 export interface ApplicantByCompany {
     "position_name": string,
     "ad_title": string,
+    "job_ad_id": string,
     "citizen_ucn": string,
     "name": string,
     "email": string,
