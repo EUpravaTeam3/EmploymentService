@@ -23,6 +23,18 @@ export class EmployeeComponent implements OnInit {
     .subscribe(res => { console.log(res); this.employee = res[0]}
   ,err => {console.log(err)})
   }
+
+  onQuit(){
+    const result = confirm("Are you sure you want to quit?");
+
+    if (result) {
+
+      console.log(this.employee)
+  
+      this.http.post("http://localhost:8000/employee/quit", {"ucn": this.employee?.citizen_ucn},
+         { withCredentials: true }).subscribe(res => window.location.reload(), err => console.log(err))
+    }
+  }
 }
 
 export interface ReceivedEmployee {

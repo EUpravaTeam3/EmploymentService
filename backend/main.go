@@ -99,6 +99,7 @@ func main() {
 	router.POST("/employee", employmentHandler.EmployApplicant)
 	router.GET("/employee/:ucn", employmentHandler.GetEmployeeByUcn)
 	router.GET("/employee/all", employmentHandler.GetEmployees)
+	router.POST("/employee/quit", employmentHandler.QuitJob)
 
 	router.Run(":" + port)
 

@@ -35,6 +35,7 @@ type AcceptedApplicant struct {
 	CitizenUcn      string        `bson:"citizen_ucn" json:"citizen_ucn"`
 	Name            string        `bson:"name" json:"name"`
 	Email           string        `bson:"email" json:"email"`
+	CvID            string        `bson:"cv_id" json:"cv_id"`
 	CompanyOwnerUcn string        `bson:"company_owner_ucn" json:"company_owner_ucn"`
 	Education       []interface{} `bson:"education" json:"education"`
 	WorkExperience  []interface{} `bson:"work_experience" json:"work_experience"`
@@ -279,6 +280,20 @@ func (e *EmploymentHandler) EmployApplicant(c *gin.Context) {
 		return
 	}
 
+	objectId, err := primitive.ObjectIDFromHex(applicant.CvID)
+	if err != nil {
+		log.Println("Invalid id")
+	}
+
+	_, err = applicantsColl.DeleteMany(ctx, bson.D{{Key: "cv_id", Value: objectId}}) // delete other applications where this user applied
+
+	if err != nil {
+		http.Error(c.Writer, err.Error(),
+			http.StatusInternalServerError)
+		e.logger.Println(err)
+		return
+	}
+
 	_, err = jobAdsColl.DeleteOne(ctx, bson.D{{Key: "_id", Value: jobAdId}}) // delete the job ad for which this user applied to
 
 	if err != nil {
@@ -349,6 +364,95 @@ func SendToService(c *gin.Context, payload interface{}, url string, isCookie boo
 
 	return nil
 
+}
+
+func (e *EmploymentHandler) QuitJob(c *gin.Context) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	cookie, err := c.Cookie("SESSION_ID")
+
+	if err != nil {
+		http.Error(c.Writer, err.Error(),
+			http.StatusInternalServerError)
+		e.logger.Println(err)
+		return
+	}
+
+	var user quitJobDto
+
+	if err := c.ShouldBindJSON(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	ssoPayload := SsoPayload{
+		Role:      "citizen",
+		Initiator: user.Ucn,
+		SessionId: cookie,
+	}
+
+	// change users role from employee to citizen in SSO
+	if err := SendToService(c, ssoPayload, "http://sso_service:9090/user/employment/"+user.Ucn, true); err != nil {
+		e.logger.Println(err)
+		c.JSON(http.StatusBadGateway, gin.H{"error": err.Error()})
+		return
+	}
+
+	// payloadApr :=
+
+	// if err := SendToService(c, payloadApr, "http://aprcroso:8005/adding-employee/request", false); err != nil {
+	// 	e.logger.Println(err)
+	// 	c.JSON(http.StatusBadGateway, gin.H{"error": err.Error()})
+	// 	return
+	// }
+
+	var cv domain.CV
+
+	cvColl := e.repo.GetCollection("employmentdb", "cvs")
+
+	err = cvColl.FindOne(ctx, bson.M{"citizen_ucn": user.Ucn}).Decode(&cv)
+	if err != nil {
+		http.Error(c.Writer, err.Error(),
+			http.StatusInternalServerError)
+		e.logger.Println(err)
+		return
+	}
+
+	if len(cv.WorkExperience) > 0 {
+		lastIndex := len(cv.WorkExperience) - 1
+		fieldPath := fmt.Sprintf("work_experience.%d", lastIndex)
+
+		var workExperience string = time.Now().Month().String() +
+			" " + strconv.Itoa(time.Now().Year()) + ")"
+
+		_, err = cvColl.UpdateOne(ctx, bson.M{"citizen_ucn": user.Ucn},
+			bson.M{"$set": bson.M{
+				fieldPath: cv.WorkExperience[lastIndex] + workExperience,
+			}})
+
+		if err != nil {
+			http.Error(c.Writer, err.Error(),
+				http.StatusInternalServerError)
+			e.logger.Println(err)
+			return
+		}
+	}
+
+	employeeColl := e.repo.GetCollection("employmentdb", "employees")
+
+	_, err = employeeColl.DeleteOne(ctx, bson.D{{Key: "citizen_ucn", Value: user.Ucn}})
+
+	if err != nil {
+		http.Error(c.Writer, err.Error(),
+			http.StatusInternalServerError)
+		e.logger.Println(err)
+		return
+	}
+
+}
+
+type quitJobDto struct {
+	Ucn string `bson:"ucn" json:"ucn"`
 }
 
 func (e *EmploymentHandler) CORSMiddleware() gin.HandlerFunc {

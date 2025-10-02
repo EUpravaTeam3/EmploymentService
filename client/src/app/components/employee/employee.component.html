@@ -13,6 +13,9 @@
       <p><b>Pay:</b> {{ employee.pay | currency:'EUR':'symbol':'1.0-0' }} </p>
     </div>
   </div>
+    <div class="action-bar">
+    <button class="create-btn" (click)="onQuit()">Quit</button>
+  </div>
 
   <ng-template #noEmployee>
     <p>No employee available.</p>

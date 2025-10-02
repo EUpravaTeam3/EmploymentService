@@ -38,15 +38,14 @@ export class NavBarComponent implements OnInit {
   logout(){
       this.http.post('http://localhost:9090/user/logout', {
     }, { withCredentials: true }).subscribe(res => {
-      console.log('status:', res);
+      console.log('status:', res);});
+
       localStorage.removeItem("eupravaUcn")
       localStorage.removeItem("eupravaEmail")
       localStorage.removeItem("eupravaName")
       localStorage.removeItem("eupravaSurname")
       localStorage.removeItem("eupravaRole")
-      
       window.location.href = "http://localhost:4200/login"
-    });
   }
 
 }

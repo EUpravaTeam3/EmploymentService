@@ -45,6 +45,7 @@ export interface ApplicantByCompany {
     "name": string,
     "company_owner_ucn": string,
     "email": string,
+    "cv_id": string,
     "education": Diploma[],
     "work_experience": string[],
     "description": string

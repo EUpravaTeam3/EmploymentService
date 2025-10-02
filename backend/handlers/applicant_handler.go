@@ -111,6 +111,7 @@ func (a *ApplicantHandler) GetApplicantsForCompany(c *gin.Context) {
 			{"company_owner_ucn", ucn},
 			{"name", "$cv.name"},
 			{"email", "$cv.email"},
+			{"cv_id", "$cv._id"},
 			{"description", "$cv.description"},
 			{"work_experience", "$cv.work_experience"},
 			{"education", "$cv.education"},
