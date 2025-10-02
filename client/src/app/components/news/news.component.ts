@@ -2,6 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { NewsService } from 'src/app/services/news.service';
 import { News } from 'src/app/model/news';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { CheckedUser } from 'src/app/model/roleResponse';
+import { CompanyService } from 'src/app/services/company.service';
+import { Company } from 'src/app/model/company';
 
 @Component({
   selector: 'app-news',
@@ -17,10 +21,29 @@ export class NewsComponent implements OnInit {
     description: ''
   };
   searchTerm: string = '';
+  role: string = ''
+  company!: Company;
 
-  constructor(private newsService: NewsService, private router: Router) {}
+  constructor(private newsService: NewsService, private router: Router, private http: HttpClient,
+    private companyService: CompanyService) {}
 
   ngOnInit(): void {
+
+    this.company._id = ""
+
+    var ucn = localStorage.getItem("eupravaUcn")
+
+      this.companyService.getCompanyByOwner(ucn!).subscribe({
+        next: (data) => (this.company = data),
+        error: (err) => (console.log(err))
+      });
+
+                this.http.get<CheckedUser>(`http://localhost:9090/user/employment`, {withCredentials: true})
+                  .subscribe(data => {
+                      this.role = data.role
+                  }, err => {
+                    window.location.href = "http://localhost:4200/login"
+                  });
     this.loadNews();
   }
 

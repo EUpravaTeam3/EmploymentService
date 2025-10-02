@@ -16,6 +16,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type EmploymentHandler struct {
@@ -28,15 +29,118 @@ func NewEmploymentHandler(l *log.Logger, r *repositories.EmploymentRepo) *Employ
 }
 
 type AcceptedApplicant struct {
-	PositionName   string        `bson:"position_name" json:"position_name"`
-	AdTitle        string        `bson:"ad_title" json:"ad_title"`
-	JobAdId        string        `bson:"job_ad_id" json:"job_ad_id"`
-	CitizenUcn     string        `bson:"citizen_ucn" json:"citizen_ucn"`
-	Name           string        `bson:"name" json:"name"`
-	Email          string        `bson:"email" json:"email"`
-	Education      []interface{} `bson:"education" json:"education"`
-	WorkExperience []interface{} `bson:"work_experience" json:"work_experience"`
-	Description    string        `bson:"description" json:"description"`
+	PositionName    string        `bson:"position_name" json:"position_name"`
+	AdTitle         string        `bson:"ad_title" json:"ad_title"`
+	JobAdId         string        `bson:"job_ad_id" json:"job_ad_id"`
+	CitizenUcn      string        `bson:"citizen_ucn" json:"citizen_ucn"`
+	Name            string        `bson:"name" json:"name"`
+	Email           string        `bson:"email" json:"email"`
+	CompanyOwnerUcn string        `bson:"company_owner_ucn" json:"company_owner_ucn"`
+	Education       []interface{} `bson:"education" json:"education"`
+	WorkExperience  []interface{} `bson:"work_experience" json:"work_experience"`
+	Description     string        `bson:"description" json:"description"`
+}
+
+type EmployeeWithJob struct {
+	ID             primitive.ObjectID `bson:"_id" json:"_id"`
+	CitizenUCN     string             `bson:"citizen_ucn" json:"citizen_ucn"`
+	StartDate      time.Time          `bson:"start_date" json:"start_date"`
+	EndDate        *time.Time         `bson:"end_date,omitempty" json:"end_date,omitempty"`
+	EmployerReview string             `bson:"employer_review,omitempty" json:"employer_review,omitempty"`
+	PositionName   string             `bson:"position_name" json:"position_name"`
+	Pay            float64            `bson:"pay" json:"pay"`
+	CompanyName    string             `bson:"company_name" json:"company_name"`
+}
+
+func (e *EmploymentHandler) GetEmployees(c *gin.Context) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	var employees domain.Employees
+
+	empColl := e.repo.GetCollection("employmentdb", "employees")
+
+	empCursor, err := empColl.Find(ctx, bson.M{})
+	if err != nil {
+		e.logger.Println(err)
+		return
+	}
+
+	if err = empCursor.All(ctx, &employees); err != nil {
+		http.Error(c.Writer, err.Error(),
+			http.StatusInternalServerError)
+		e.logger.Fatal(err)
+		return
+	}
+
+	err = employees.ToJSON(c.Writer)
+	if err != nil {
+		http.Error(c.Writer, err.Error(),
+			http.StatusInternalServerError)
+		e.logger.Fatal("Unable to convert to json :", err)
+		return
+	}
+}
+
+func (e *EmploymentHandler) GetEmployeeByUcn(c *gin.Context) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	ucn := c.Param("ucn")
+
+	empColl := e.repo.GetCollection("employmentdb", "employees")
+
+	pipeline := mongo.Pipeline{
+		// Match employee(s) by citizen_ucn
+		{{"$match", bson.D{{"citizen_ucn", ucn}}}},
+
+		// Lookup the Job for the employee
+		{{"$lookup", bson.D{
+			{"from", "jobs"},
+			{"localField", "job_id"},
+			{"foreignField", "_id"},
+			{"as", "job"},
+		}}},
+
+		// Unwind job (since employee has only one job_id)
+		{{"$unwind", "$job"}},
+
+		// Lookup the Company for that job
+		{{"$lookup", bson.D{
+			{"from", "companies"},
+			{"localField", "job.company_id"},
+			{"foreignField", "_id"},
+			{"as", "company"},
+		}}},
+
+		// Unwind company
+		{{"$unwind", "$company"}},
+
+		// Project final shape
+		{{"$project", bson.D{
+			{"_id", 1},
+			{"citizen_ucn", 1},
+			{"start_date", 1},
+			{"end_date", 1},
+			{"employer_review", 1},
+			{"position_name", "$job.position_name"},
+			{"pay", "$job.pay"},
+			{"company_name", "$company.name"},
+		}}},
+	}
+
+	cursor, err := empColl.Aggregate(ctx, pipeline)
+	if err != nil {
+		http.Error(c.Writer, err.Error(),
+			http.StatusInternalServerError)
+		e.logger.Println(err)
+	}
+	var employees []EmployeeWithJob
+	if err = cursor.All(ctx, &employees); err != nil {
+		http.Error(c.Writer, err.Error(),
+			http.StatusInternalServerError)
+		e.logger.Println(err)
+	}
+	c.JSON(http.StatusOK, employees)
 }
 
 func (e *EmploymentHandler) EmployApplicant(c *gin.Context) {
@@ -52,7 +156,6 @@ func (e *EmploymentHandler) EmployApplicant(c *gin.Context) {
 	}
 
 	var applicant AcceptedApplicant
-	var user domain.User
 	var job domain.Job
 	employee := &domain.Employee{}
 
@@ -84,11 +187,9 @@ func (e *EmploymentHandler) EmployApplicant(c *gin.Context) {
 		return
 	}
 
-	employee.CitizenUCN = user.UCN
+	employee.CitizenUCN = applicant.CitizenUcn
 	employee.JobId = job.Id
 	employee.StartDate = time.Now()
-
-	err = e.repo.AddEmployeeToCompany(*employee) // add new employee to employees database
 
 	if err != nil {
 		http.Error(c.Writer, err.Error(),
@@ -99,7 +200,7 @@ func (e *EmploymentHandler) EmployApplicant(c *gin.Context) {
 
 	var cvColl = e.repo.GetCollection("employmentdb", "cvs")
 	var companyColl = e.repo.GetCollection("employmentdb", "companies")
-	var jobAdsColl = e.repo.GetCollection("employmentdb", "jobads")
+	var jobAdsColl = e.repo.GetCollection("employmentdb", "jobAds")
 	var applicantsColl = e.repo.GetCollection("employmentdb", "applicants")
 
 	var company domain.Company
@@ -120,10 +221,11 @@ func (e *EmploymentHandler) EmployApplicant(c *gin.Context) {
 		return
 	}
 
-	/*payloadApr := AprPayload{
-		RegistrationNumber: company.IdNumber,
-		EmployeeUcn:        applicant.CitizenUcn,
-	}*/
+	payloadApr := AprPayload{
+		Name:            applicant.Name,
+		Position:        job.PoistionName,
+		CreatedByUserId: applicant.CompanyOwnerUcn,
+	}
 
 	ssoPayload := SsoPayload{
 		Role:      "employee",
@@ -131,18 +233,27 @@ func (e *EmploymentHandler) EmployApplicant(c *gin.Context) {
 		SessionId: cookie,
 	}
 
-	// add employe to APR company list
-	// if err := sendToService(c, payloadApr, "http://aprcroso_service:8005/api/companies", false); err != nil {
-	// 	e.logger.Println(err)
-	// 	c.JSON(http.StatusBadGateway, gin.H{"error": err.Error()})
-	// 	return
-	// }
-
 	// change users role from citizen to employee in SSO
 	fmt.Println(applicant.CitizenUcn)
-	if err := sendToService(c, ssoPayload, "http://sso_service:9090/user/employment/"+applicant.CitizenUcn, true); err != nil {
+	if err := SendToService(c, ssoPayload, "http://sso_service:9090/user/employment/"+applicant.CitizenUcn, true); err != nil {
 		e.logger.Println(err)
 		c.JSON(http.StatusBadGateway, gin.H{"error": err.Error()})
+		return
+	}
+
+	// add employe to APR company list
+	if err := SendToService(c, payloadApr, "http://aprcroso:8005/adding-employee/request", false); err != nil {
+		e.logger.Println(err)
+		c.JSON(http.StatusBadGateway, gin.H{"error": err.Error()})
+		return
+	}
+
+	_, err = e.repo.AddEmployeeToCompany(*employee) // add new employee to employees database
+
+	if err != nil {
+		http.Error(c.Writer, err.Error(),
+			http.StatusInternalServerError)
+		e.logger.Println(err)
 		return
 	}
 
@@ -178,9 +289,15 @@ func (e *EmploymentHandler) EmployApplicant(c *gin.Context) {
 	}
 }
 
+// type AprPayload struct {
+// 	RegistrationNumber string `json:"registrationNumber"`
+// 	EmployeeUcn        string `json:"employeeUcn"`
+// }
+
 type AprPayload struct {
-	RegistrationNumber string `json:"registrationNumber"`
-	EmployeeUcn        string `json:"employeeUcn"`
+	Name            string `bson:"name" json:"name"`
+	Position        string `bson:"position" json:"position"`
+	CreatedByUserId string `bson:"createdByUserId" json:"createdByUserId"`
 }
 
 type SsoPayload struct {
@@ -189,18 +306,25 @@ type SsoPayload struct {
 	SessionId string `bson:"session" json:"session"`
 }
 
-func sendToService(c *gin.Context, payload interface{}, url string, isCookie bool) error {
+func SendToService(c *gin.Context, payload interface{}, url string, isCookie bool) error {
 
 	jsonData, err := json.Marshal(payload)
 	if err != nil {
 		fmt.Errorf("failed to encode body: %w", err)
 	}
 
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
+	fmt.Println("Sending to APR:", url, "payload:", string(jsonData))
+
+	buf := bytes.NewBuffer(jsonData)
+	fmt.Println("Buffer contents:", buf.String())
+
+	req, err := http.NewRequest("POST", url, buf)
+
 	if err != nil {
 		fmt.Errorf("failed to create request: %w", err)
 	}
-	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
+	req.Header.Set("Accept", "application/json")
 
 	if isCookie {
 		if cookie, err := c.Cookie("SESSION_ID"); err == nil {

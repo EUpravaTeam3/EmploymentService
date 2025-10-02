@@ -37,7 +37,6 @@ export class CvComponent implements OnInit {
       this.cv = cv
       }, err => {
         console.log(err);
-        alert(err)
       });
 
   }
@@ -52,7 +51,7 @@ export class CvComponent implements OnInit {
     console.log(this.cv)
 
     this.http.post('http://localhost:8000/resume/' + this.cv.citizen_ucn, this.cv, { withCredentials: true})
-    .subscribe(res => console.log(res), err => {alert(err); console.log(err)})
+    .subscribe(res => window.location.reload(), err => {alert(err.Error()); console.log(err)})
   }
 
   onGenerateDiploma(){

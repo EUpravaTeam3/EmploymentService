@@ -10,7 +10,7 @@ import { CompanyService } from 'src/app/services/company.service';
 })
 export class CompanyComponent {
 
-    company: Company | null = null;
+    company?: Company | null;
     applicants = []
 
   constructor(
@@ -19,13 +19,7 @@ export class CompanyComponent {
   ) {}
 
   ngOnInit(): void {
-    const companyId = this.route.snapshot.paramMap.get('id');
-    if (companyId != null || companyId != "" || companyId != undefined) {
-      this.companyService.getCompanyById(companyId!).subscribe({
-        next: (data) => (this.company = data),
-        error: (err) => console.error(err)
-      });
-    } else {
+    
       var ucn = localStorage.getItem("eupravaUcn")
       if (ucn){
         this.companyService.getCompanyByOwner(ucn).subscribe({
@@ -33,6 +27,6 @@ export class CompanyComponent {
         error: (err) => console.error(err)
       });
       }
-    }
+    
   }
 }

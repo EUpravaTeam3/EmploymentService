@@ -14,6 +14,7 @@ import { CvComponent } from './components/cv/cv.component';
 import { ApplicationsComponent } from './components/applications/applications.component';
 import { ApplicantsComponent } from './components/applicants/applicants.component';
 import { JobsComponent } from './components/jobs/jobs.component';
+import { EmployeeComponent } from './components/employee/employee.component';
 
 const routes: Routes = [
   {path: '', pathMatch:'full', component: WelcomePageComponent},
@@ -24,11 +25,12 @@ const routes: Routes = [
   {path: 'news', component: NewsComponent},
   {path: 'sign-in', component: LoginComponent},
   {path: 'create-news', component: CreateNewsComponent},
-  {path: 'company/:id', component: CompanyComponent},
+  {path: 'company', component: CompanyComponent},
   {path: 'resume', component: CvComponent},
   {path: 'applications', component: ApplicationsComponent},
   {path: 'applicants', component: ApplicantsComponent},
-  {path: 'jobs', component: JobsComponent}
+  {path: 'jobs', component: JobsComponent},
+  {path: 'employee', component: EmployeeComponent}
 ]
 ;
 

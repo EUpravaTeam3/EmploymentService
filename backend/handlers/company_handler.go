@@ -80,6 +80,18 @@ func (ch *CompanyHandler) CreateCompany(c *gin.Context) {
 		return
 	}
 
+	ssoPayload := SsoPayload{
+		Role:      "employer",
+		Initiator: company.OwnerUcn,
+		SessionId: "eupravaDevelopment",
+	}
+
+	if err := SendToService(c, ssoPayload, "http://sso_service:9090/user/employment/"+company.OwnerUcn, true); err != nil {
+		ch.logger.Println(err)
+		c.JSON(http.StatusBadGateway, gin.H{"error": err.Error()})
+		return
+	}
+
 	response := map[string]interface{}{
 		"id":                 0,
 		"name":               companyDTO.Name,

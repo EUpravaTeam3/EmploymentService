@@ -11,12 +11,11 @@
     class="search-input"
   /></h2>
 
-  <div class="news-list" *ngIf="filteredJobAds != null; else noJobAds">
+  <div *ngIf="filteredJobAds">
+  <div class="news-list" *ngIf="filteredJobAds !== null; else noJobAds">
     <div class="news-item" *ngFor="let job of filteredJobAds; let i = index">
       <div class="news-content">
-        <div (click)="seeCompany(job.company_id)" style="cursor:pointer;">
           <h3>{{ job.company_name }}: {{ job.ad_title }}</h3>
-        </div>
         <p><b>Type:</b> {{ job.job_type }}</p>
         <p><b>Qualification:</b> {{ job.qualification }}</p>
         <p class="description">{{ job.job_description }}</p>
@@ -27,6 +26,7 @@
         <button class="delete-btn" *ngIf="role == 'citizen'" (click)="applyForJobAd(job._id!)">Apply</button>
       </div>
     </div>
+  </div>
   </div>
 
   <ng-template #noJobAds>

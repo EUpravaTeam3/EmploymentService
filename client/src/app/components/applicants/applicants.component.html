@@ -11,15 +11,17 @@
     />
   </h2>
 
-  <div class="news-list" *ngIf="applications.length > 0; else noApplications">
+  <div class="news-list" *ngIf="applications !== null; else noApplications">
     <div class="news-item" *ngFor="let app of applications">
       <div class="news-content">
         <h3>{{ app.ad_title }}</h3>
       </div>
-      <p>{{ app.position_name }}</p>
+      <p>for job {{ app.position_name }}</p>
       <p>{{ app.name }}</p>
       <p>{{ app.email }}</p>
-      <p>{{ app.education[0] }}</p>
+      <p>{{ app.education[0].institution_name }}</p>
+      <p>{{ app.education[0].institution_type }}</p>
+      <p>Average grade: {{ app.education[0].average_grade }}</p>
       <p>{{ app.work_experience }}</p>
       <p>{{ app.description }}</p>
       <div class="news-actions">

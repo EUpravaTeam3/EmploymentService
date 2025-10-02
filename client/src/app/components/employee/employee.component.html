@@ -1,1 +1,20 @@
-<p>employee works!</p>
+<nav-bar></nav-bar>
+
+<div class="news-container">
+  <h2>Employee details</h2>
+
+  <div *ngIf="employee; else noEmployee">
+    <div class="news-item">
+      <h3>{{ employee.position_name }}</h3>
+      <h4>{{ employee.company_name }}</h4>
+      <p>{{ name }}</p>
+      <p>{{ employee.citizen_ucn }}</p>
+      <p><b>Start date:</b> {{ employee.start_date }}</p>
+      <p><b>Pay:</b> {{ employee.pay | currency:'EUR':'symbol':'1.0-0' }} </p>
+    </div>
+  </div>
+
+  <ng-template #noEmployee>
+    <p>No employee available.</p>
+  </ng-template>
+</div>

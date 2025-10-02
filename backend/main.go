@@ -97,6 +97,8 @@ func main() {
 	router.POST("/resume/:ucn", cvHandler.PostCv)
 
 	router.POST("/employee", employmentHandler.EmployApplicant)
+	router.GET("/employee/:ucn", employmentHandler.GetEmployeeByUcn)
+	router.GET("/employee/all", employmentHandler.GetEmployees)
 
 	router.Run(":" + port)
 

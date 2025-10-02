@@ -92,7 +92,7 @@ export class JobadComponent implements OnInit {
       this.http.post("http://localhost:8000/applicant/" + storedUserUcn, application)
       .subscribe(data => {console.log(data)
         window.location.reload()
-      }, err => {console.log(err); alert(err)})
+      }, err => {console.log(err); alert(err.Error())})
     }
   }
 }

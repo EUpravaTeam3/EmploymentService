@@ -88,20 +88,20 @@ func (er *EmploymentRepo) AddDiplomaToCV(diploma *domain.Diploma) error {
 
 }
 
-func (er *EmploymentRepo) AddEmployeeToCompany(employee domain.Employee) error {
+func (er *EmploymentRepo) AddEmployeeToCompany(employee domain.Employee) (interface{}, error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	employeeCollection := er.getCollection("employees")
 
-	_, err := employeeCollection.InsertOne(ctx, &employee)
+	res, err := employeeCollection.InsertOne(ctx, &employee)
 
 	if err != nil {
-		return err
+		return 0, err
 	}
 
-	return nil
+	return res.InsertedID, nil
 
 }
 
@@ -149,7 +149,7 @@ func (er *EmploymentRepo) InsertJobAd(jobAd *domain.JobAd) error {
 
 func (er *EmploymentRepo) getCollection(collectionName string) *mongo.Collection {
 
-	database := er.Cli.Database("mongoDemo")
+	database := er.Cli.Database("employmentdb")
 	collection := database.Collection(collectionName)
 	return collection
 }

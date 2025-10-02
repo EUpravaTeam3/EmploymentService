@@ -43,7 +43,7 @@
   </form>
 
   <!-- Jobs list -->
-  <div class="news-list" *ngIf="jobs.length > 0; else noJobs">
+  <div class="news-list" *ngIf="jobs !== null; else noJobs">
     <div class="news-item" *ngFor="let job of jobs; let i = index">
       <div class="news-content">
         <h3>{{ job.position_name }}</h3>

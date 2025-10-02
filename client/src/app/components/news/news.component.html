@@ -1,5 +1,5 @@
 <nav-bar></nav-bar>
-<button class="create-btn" (click)="onCreateNews()">Create News</button>
+<button class="create-btn" *ngIf="role == 'employer'" (click)="onCreateNews()">Create News</button>
 <div class="news-container">
   <h2>Company News</h2>
     <h2><input
@@ -9,7 +9,7 @@
     class="search-input"
   /></h2>
 
-  <div class="news-list" *ngIf="filteredNews.length > 0; else noNews">
+  <div class="news-list" *ngIf="filteredNews !== null; else noNews">
     <div class="news-item" *ngFor="let item of filteredNews; let i = index">
       <div class="news-content">
         <h3>{{ item.title }}</h3>
@@ -17,7 +17,7 @@
         <p class="description">{{ item.description }}</p>
       </div>
       <div class="news-actions">
-        <button class="delete-btn" (click)="onDeleteNews(item._id!)">Delete</button>
+        <button *ngIf="company._id == item.employer_id" class="delete-btn" (click)="onDeleteNews(item._id!)">Delete</button>
       </div>
     </div>
   </div>

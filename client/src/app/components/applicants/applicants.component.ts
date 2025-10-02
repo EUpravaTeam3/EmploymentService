@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
+import { Diploma } from 'src/app/model/diploma';
 
 @Component({
   selector: 'app-applicants',
@@ -42,8 +43,9 @@ export interface ApplicantByCompany {
     "job_ad_id": string,
     "citizen_ucn": string,
     "name": string,
+    "company_owner_ucn": string,
     "email": string,
-    "education": string[],
+    "education": Diploma[],
     "work_experience": string[],
     "description": string
   }
