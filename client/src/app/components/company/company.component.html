@@ -17,17 +17,18 @@
     <p>No company details available.</p>
   </ng-template>
 
-  <!-- <div *ngIf="myCompany">
-      <div class="news-list" *ngIf="filteredNews.length > 0; else noNews">
-    <div class="news-item" *ngFor="let item of filteredNews; let i = index">
-      <div class="news-content">
-        <h3>{{ item.title }}</h3>
-        <p class="description">{{ item.description }}</p>
-      </div>
-      <div class="news-actions">
-        <button class="accept-btn" (click)="onAccept(item._id!)">Accept</button>
+      <div class="reviews-container" *ngIf="reviews && reviews.length > 0; else noReviews">
+      <h3>Company Reviews</h3>
+      <div *ngFor="let review of reviews" class="review-item">
+        <!-- Show stars based on review.rating -->
+        <p class="rating">
+          <span *ngFor="let star of [].constructor(review.rating)">★</span>
+        </p>
+        <p>{{ review.description }}</p>
       </div>
     </div>
-  </div>
-  </div> -->
+
+    <ng-template #noReviews>
+      <p>No reviews available.</p>
+    </ng-template>
 </div>

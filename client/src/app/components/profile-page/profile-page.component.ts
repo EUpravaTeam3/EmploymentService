@@ -1,5 +1,7 @@
+import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
+import { CheckedUser } from 'src/app/model/roleResponse';
 import { User } from 'src/app/model/user';
 import { AuthService } from 'src/app/services/auth.service';
 
@@ -12,27 +14,27 @@ import { AuthService } from 'src/app/services/auth.service';
 export class ProfilePageComponent implements OnInit {
 
   constructor(private authService: AuthService,
-    private toastr: ToastrService,) { }
+    private toastr: ToastrService,
+  private http: HttpClient) { }
 
-  // booleans for the navbar to check the users role and restrict access to pages
+  name: string = ''
+  ucn: string = ''
+  email: string = ''
   isUserLoggedIn = this.authService.userIsLoggedIn()
-  //isUserHEmployer = this.authService.userHasRole("EMPLOYER")
-  //isUserCitizen = this.authService.userHasRole("CITIZEN")
-
   user: User = new User()
   userToEdit: User = new User()
 
   ngOnInit(): void {
 
-    /*this.authService.getProfile(localStorage.getItem("eupravaId")!).subscribe(data => {
-      this.user = data
-    }, err => {
-      console.log(err)
-    })*/
-}
+    this.http.get<CheckedUser>(`http://localhost:9090/user/employment`, {withCredentials: true})
+          .subscribe(data => {
+            console.log(data)
+            this.name = data.name + " " + data.surname
+            this.ucn = data.ucn
+            this.email = data.email
+      }, err => {
+          window.location.href = "http://localhost:4200/login"
+        });
+  }
 }
 
-//reload page after 3 seconds
-function reloadTimeOut(){
-  setTimeout(() => window.location.reload(), 3000)
-}

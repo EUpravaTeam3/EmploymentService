@@ -92,6 +92,8 @@ func main() {
 	router.GET("/company", companyHandler.GetCompanies)
 	router.GET("/company/:id", companyHandler.FindCompanyById)
 	router.GET("/company/owner/:owner", companyHandler.GetCompanyByOwnerUcn)
+	router.POST("/company/review", companyHandler.PostReview)
+	router.GET("/company/reviews/:company_id", companyHandler.GetReviewsOfCompany)
 
 	router.GET("/resume/:ucn", cvHandler.FindCvByUcn)
 	router.POST("/resume/:ucn", cvHandler.PostCv)

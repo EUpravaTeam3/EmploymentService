@@ -64,10 +64,6 @@ export class JobadComponent implements OnInit {
   .catch(err => console.error('nav error', err));;
   }
 
-      seeCompany(company: string): void {
-    this.router.navigate(['/company/' + company]);
-  }
-
     get filteredJobAds() {
       if (this.jobAds.length > 0){
     if (!this.searchTerm) return this.jobAds;
@@ -94,5 +90,10 @@ export class JobadComponent implements OnInit {
         window.location.reload()
       }, err => {console.log(err); alert(err.Error())})
     }
+  }
+
+  seeCompany(id: string) {
+    this.router.navigate(['/company/']);
+    localStorage.setItem("companyId", id)
   }
 }

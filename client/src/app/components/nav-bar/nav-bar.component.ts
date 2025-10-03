@@ -17,6 +17,7 @@ export class NavBarComponent implements OnInit {
   private router: Router){}
 
   role: string = ""
+  firstName: string = ""
 
   ngOnInit(): void {
 
@@ -30,6 +31,7 @@ export class NavBarComponent implements OnInit {
                   localStorage.setItem("eupravaSurname", data.surname)
                   localStorage.setItem("eupravaRole", data.role)
                   this.role = data.role
+                  this.firstName = data.name
               }, err => {
                 window.location.href = "http://localhost:4200/login"
               });
@@ -38,14 +40,14 @@ export class NavBarComponent implements OnInit {
   logout(){
       this.http.post('http://localhost:9090/user/logout', {
     }, { withCredentials: true }).subscribe(res => {
-      console.log('status:', res);});
-
-      localStorage.removeItem("eupravaUcn")
+      console.log('status:', res);
+          localStorage.removeItem("eupravaUcn")
       localStorage.removeItem("eupravaEmail")
       localStorage.removeItem("eupravaName")
       localStorage.removeItem("eupravaSurname")
       localStorage.removeItem("eupravaRole")
       window.location.href = "http://localhost:4200/login"
+    });
   }
 
 }

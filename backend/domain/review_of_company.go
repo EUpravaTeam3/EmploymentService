@@ -8,11 +8,11 @@ import (
 )
 
 type ReviewOfCompany struct {
-	Id          primitive.ObjectID `bson:"_id,omitempty"`
-	Description string             `bson:"description"`
-	Rating      int                `bson:"rating"`
-	EmployeeId  primitive.ObjectID `bson:"employee_id"`
-	EmployerId  primitive.ObjectID `bson:"employer_id"`
+	Id          primitive.ObjectID `bson:"_id,omitempty" json:"_id,omitempty"`
+	Description string             `bson:"description" json:"description"`
+	Rating      int                `bson:"rating" json:"rating"`
+	EmployeeId  primitive.ObjectID `bson:"employee_id" json:"employee_id"`
+	EmployerId  primitive.ObjectID `bson:"employer_id" json:"employer_id"`
 }
 
 type ReviewsOfCompany []*ReviewOfCompany

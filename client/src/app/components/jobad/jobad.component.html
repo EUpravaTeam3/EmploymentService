@@ -15,7 +15,8 @@
   <div class="news-list" *ngIf="filteredJobAds !== null; else noJobAds">
     <div class="news-item" *ngFor="let job of filteredJobAds; let i = index">
       <div class="news-content">
-          <h3>{{ job.company_name }}: {{ job.ad_title }}</h3>
+          <h3 (click)="seeCompany(job.company_id)">{{ job.company_name }}:</h3>
+          <h3>{{ job.ad_title }}</h3>
         <p><b>Type:</b> {{ job.job_type }}</p>
         <p><b>Qualification:</b> {{ job.qualification }}</p>
         <p class="description">{{ job.job_description }}</p>

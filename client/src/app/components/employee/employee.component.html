@@ -14,10 +14,23 @@
     </div>
   </div>
     <div class="action-bar">
-    <button class="create-btn" (click)="onQuit()">Quit</button>
+    <button class="delete-btn" (click)="onQuit()">Quit</button>
   </div>
+  <div class="review-form">
+      <h3>Leave a Review</h3>
+      <form (ngSubmit)="onSubmitReview()">
+        <label for="rating">Rating (1-5)</label>
+        <input type="number" id="rating" [(ngModel)]="review.rating" name="rating" min="1" max="5" required />
 
-  <ng-template #noEmployee>
+        <label for="description">Description</label>
+        <textarea id="description" [(ngModel)]="review.description" name="description" rows="3" required></textarea>
+
+        <button type="submit" class="create-btn">Submit Review</button>
+      </form>
+    </div>
+      <ng-template #noEmployee>
     <p>No employee available.</p>
   </ng-template>
-</div>
+  </div>
+
+

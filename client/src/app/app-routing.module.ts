@@ -17,9 +17,9 @@ import { JobsComponent } from './components/jobs/jobs.component';
 import { EmployeeComponent } from './components/employee/employee.component';
 
 const routes: Routes = [
-  {path: '', pathMatch:'full', component: WelcomePageComponent},
-  {path: 'welcome-page', component: WelcomePageComponent},
-  {path: 'profile-page', component: ProfilePageComponent},
+  {path: '', pathMatch:'full', component: ProfilePageComponent},
+  {path: 'welcome-page', component: ProfilePageComponent},
+  {path: 'profile-page', component: WelcomePageComponent},
   {path: 'jobad', component: JobadComponent},
   {path: 'jobads/create', component: CreateJobAdComponent},
   {path: 'news', component: NewsComponent},
